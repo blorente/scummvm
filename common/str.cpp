@@ -444,6 +444,24 @@ uint String::hash() const {
 	return hashit(c_str());
 }
 
+void String::replace(uint pos, uint count, const String& str) {
+	replace(pos, count, str._str);
+}
+
+void String::replace(uint pos, uint count, const char* str) {
+	assert(pos+count <= _size);
+	for (uint i = 0; i < count; ++i) 
+		_str[pos + i] = str[i];
+}
+
+void String::replace(String::const_iterator begin, String::const_iterator end, const String& str) {
+	uint i = 0;
+	for (; begin != end; ++begin) {
+		*begin = str._str[i];
+		i++;
+	}
+}
+
 // static
 String String::format(const char *fmt, ...) {
 	String output;

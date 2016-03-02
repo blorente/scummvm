@@ -5,8 +5,6 @@
 #include "common/algorithm.h"
 #include "common/list.h"
 
-#include "common/debug.h"
-
 class AlgorithmTestSuite : public CxxTest::TestSuite {
 	template<typename T, class StrictWeakOrdering>
 	bool checkSort(T first, T last, StrictWeakOrdering comp = StrictWeakOrdering()) {

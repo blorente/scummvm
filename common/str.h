@@ -224,6 +224,17 @@ public:
 	uint hash() const;
 
 	/**
+	 * Various replace functions to suit different parameters.
+	 * 
+	 */
+	// Replace 'count' bits, starting from 'pos' with str[pos, pos+count)
+	void replace(uint32 pos, uint32 count, const String& str);
+	// The same as above, but accepts a C-like array of characters	
+	void replace(uint32 pos, uint32 count, const char* str);
+	// Replace the space between the iterators with str[begin, end)
+	void replace(String::const_iterator begin, String::const_iterator end, const String& str);
+
+	/**
 	 * Print formatted data into a String object. Similar to sprintf,
 	 * except that it stores the result in (variably sized) String
 	 * instead of a fixed size buffer.

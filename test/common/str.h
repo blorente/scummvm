@@ -419,4 +419,21 @@ class StringTestSuite : public CxxTest::TestSuite
 		TS_ASSERT_EQUALS(scumm_strnicmp("abCd", "ABCde", 4), 0);
 		TS_ASSERT_LESS_THAN(scumm_strnicmp("abCd", "ABCde", 5), 0);
 	}
+
+	void test_replace() {
+		Common::String testString = Common::String("Temporary fix.   ");
+
+		// Positions and sizes as parameters, string as replacement
+		testString.replace(10, 3, Common::String("my "));
+		TS_ASSERT_EQUALS(testString, Common::String("Temporary my .   "));
+
+		// The same but with char*
+		testString.replace(13, 3, "ass");
+		TS_ASSERT_EQUALS(testString, Common::String("Temporary my ass "));
+		
+		// Using iterators (also a terribly useless program as a test).
+		testString.replace(testString.begin(), testString.end(), "Temporary my ass.");
+		TS_ASSERT_EQUALS(testString, Common::String("Temporary my ass."));
+		// More tests...
+	}
 };
