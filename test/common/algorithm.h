@@ -5,6 +5,8 @@
 #include "common/algorithm.h"
 #include "common/list.h"
 
+#include "common/debug.h"
+
 class AlgorithmTestSuite : public CxxTest::TestSuite {
 	template<typename T, class StrictWeakOrdering>
 	bool checkSort(T first, T last, StrictWeakOrdering comp = StrictWeakOrdering()) {
@@ -21,6 +23,26 @@ class AlgorithmTestSuite : public CxxTest::TestSuite {
 		for (T prev = first++; first != last; ++prev, ++first) {
 			if (comp(*first, *prev))
 				return false;
+		}
+		return true;
+	}
+
+	template<typename It>
+	bool checkEqual(It one_first, It one_last, It other_first) {
+		if (one_first == one_last) 
+			return true;
+
+		// Check whether two containers have the same items in the same order,
+		// starting from some iterators one_first and other_first
+		// 
+		// It iterates trough the containers, comparing the elements one by one.
+		// If it finds a discrepancy, it returns false. Otherwise, it returns true.
+
+		for (; one_first != one_last; ++one_first) {
+			if (*one_first != *other_first) {				
+				return false;
+			} 
+			++other_first;
 		}
 		return true;
 	}
@@ -96,5 +118,33 @@ public:
 		// already sorted
 		Common::sort(list.begin(), list.end());
 		TS_ASSERT_EQUALS(checkSort(list.begin(), list.end(), Common::Less<Item>()), true);
+	}
+	
+	void test_string_replace() {
+
+		Common::String original = "Hello World";
+		Common::String expected = "Hells Wsrld";
+
+		Common::replace(original.begin(), original.end(), 'o', 's');
+		
+		TS_ASSERT_EQUALS(original, expected);		
+	}
+
+	void test_container_replace() {
+		
+		Common::List<int> original;
+		Common::List<int> expected;
+		for (int i = 0; i < 6; ++i) {
+			original.push_back(i);
+			if (i == 3) {
+				expected.push_back(5);
+			} else {
+				expected.push_back(i);
+			}
+		}
+
+		Common::replace(original.begin(), original.end(), 3, 5);
+		
+		TS_ASSERT_EQUALS(checkEqual(original.begin(), original.end(), expected.begin()), true);
 	}
 };

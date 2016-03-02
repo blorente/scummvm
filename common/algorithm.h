@@ -270,5 +270,18 @@ T gcd(T a, T b) {
 #pragma warning(pop)
 #endif
 
+/**
+ * Replacement algorithm for iterables.
+ * Replaces the occurrences of original in [begin, end) with occurrences of replaced 
+ */
+template<class It, class Dat>
+void replace(It begin, It end, const Dat& original, const Dat& replaced) {
+	for (; begin != end; ++begin) {
+        if (*begin == original) {
+            *begin = replaced;
+        }
+    }
+}
+
 } // End of namespace Common
 #endif
