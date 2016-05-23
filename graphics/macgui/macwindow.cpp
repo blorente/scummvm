@@ -49,8 +49,7 @@
 #include "graphics/primitives.h"
 #include "common/events.h"
 #include "graphics/macgui/macwindowmanager.h"
-
-#include "wage/macwindow.h"
+#include "graphics/macgui/macwindow.h"
 
 namespace Graphics {
 
