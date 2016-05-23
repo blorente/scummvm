@@ -48,7 +48,7 @@
 #ifndef WAGE_WORLD_H
 #define WAGE_WORLD_H
 
-#include "wage/macwindowmanager.h"
+#include "graphics/macgui/macwindowmanager.h"
 
 namespace Wage {
 
@@ -87,7 +87,7 @@ public:
 	ObjArray _orderedObjs;
 	ChrArray _orderedChrs;
 	Common::Array<Sound *> _orderedSounds;
-	Patterns *_patterns;
+	Graphics::Patterns *_patterns;
 	Scene *_storageScene;
 	Chr *_player;
 	//List<MoveListener> moveListeners;

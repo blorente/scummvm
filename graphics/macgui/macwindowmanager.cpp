@@ -57,12 +57,12 @@
 #include "graphics/managed_surface.h"
 #include "graphics/palette.h"
 #include "graphics/primitives.h"
+#include "graphics/macgui/macwindowmanager.h"
 
-#include "wage/macwindowmanager.h"
 #include "wage/macwindow.h"
 #include "wage/macmenu.h"
 
-namespace Wage {
+namespace Graphics {
 
 static const byte palette[] = {
 	0, 0, 0,           // Black
@@ -145,8 +145,8 @@ MacWindowManager::~MacWindowManager() {
         delete _windows[i];
 }
 
-MacWindow *MacWindowManager::addWindow(bool scrollable, bool resizable, bool editable) {
-    MacWindow *w = new MacWindow(_lastId, scrollable, resizable, editable, this);
+Wage::MacWindow *MacWindowManager::addWindow(bool scrollable, bool resizable, bool editable) {
+	Wage::MacWindow *w = new Wage::MacWindow(_lastId, scrollable, resizable, editable, this);
 
     _windows.push_back(w);
     _windowStack.push_back(w);
@@ -158,8 +158,8 @@ MacWindow *MacWindowManager::addWindow(bool scrollable, bool resizable, bool edi
     return w;
 }
 
-Menu *MacWindowManager::addMenu() {
-	_menu = new Menu(_lastId, _screen->getBounds(), this);
+Wage::Menu *MacWindowManager::addMenu() {
+	_menu = new Wage::Menu(_lastId, _screen->getBounds(), this);
 
 	_windows.push_back(_menu);
 
@@ -246,8 +246,8 @@ void MacWindowManager::draw() {
 	if (_fullRefresh)
 		drawDesktop();
 
-    for (Common::List<BaseMacWindow *>::const_iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
-        BaseMacWindow *w = *it;
+    for (Common::List<Wage::BaseMacWindow *>::const_iterator it = _windowStack.begin(); it != _windowStack.end(); it++) {
+		Wage::BaseMacWindow *w = *it;
         if (w->draw(_screen, _fullRefresh)) {
             w->setDirty(false);
 
@@ -274,8 +274,8 @@ bool MacWindowManager::processEvent(Common::Event &event) {
             event.type != Common::EVENT_LBUTTONUP)
         return false;
 
-	if (_windows[_activeWindow]->isEditable() && _windows[_activeWindow]->getType() == kWindowWindow &&
-			((MacWindow *)_windows[_activeWindow])->getInnerDimensions().contains(event.mouse.x, event.mouse.y)) {
+	if (_windows[_activeWindow]->isEditable() && _windows[_activeWindow]->getType() == Wage::kWindowWindow &&
+			((Wage::MacWindow *)_windows[_activeWindow])->getInnerDimensions().contains(event.mouse.x, event.mouse.y)) {
 		if (_cursorIsArrow) {
 			CursorMan.replaceCursor(macCursorBeam, 11, 16, 3, 8, 3);
 			_cursorIsArrow = false;
@@ -287,9 +287,9 @@ bool MacWindowManager::processEvent(Common::Event &event) {
 		}
 	}
 
-    for (Common::List<BaseMacWindow *>::const_iterator it = _windowStack.end(); it != _windowStack.begin();) {
+    for (Common::List<Wage::BaseMacWindow *>::const_iterator it = _windowStack.end(); it != _windowStack.begin();) {
         it--;
-        BaseMacWindow *w = *it;
+		Wage::BaseMacWindow *w = *it;
 
         if (w->hasAllFocus() || w->getDimensions().contains(event.mouse.x, event.mouse.y)) {
             if (event.type == Common::EVENT_LBUTTONDOWN || event.type == Common::EVENT_LBUTTONUP)
@@ -377,4 +377,4 @@ void MacWindowManager::popCursor() {
 }
 
 
-} // End of namespace Wage
+} // End of namespace Graphics
