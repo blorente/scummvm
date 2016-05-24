@@ -52,6 +52,9 @@
 
 namespace Wage {
 
+// Import the enum definitions
+using Graphics::Patterns;
+
 class Sound;
 
 class World {
