@@ -52,9 +52,6 @@
 
 namespace Wage {
 
-// Import the enum definitions
-using Graphics::Patterns;
-
 class Sound;
 
 class World {
@@ -90,7 +87,7 @@ public:
 	ObjArray _orderedObjs;
 	ChrArray _orderedChrs;
 	Common::Array<Sound *> _orderedSounds;
-	Graphics::Patterns *_patterns;
+	Graphics::MacPatterns *_patterns;
 	Scene *_storageScene;
 	Chr *_player;
 	//List<MoveListener> moveListeners;
