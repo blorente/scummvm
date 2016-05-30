@@ -123,7 +123,7 @@ struct TransparentSurface : public Graphics::Surface {
 	                  uint color = TS_ARGB(255, 255, 255, 255),
 	                  int width = -1, int height = -1,
 	                  TSpriteBlendMode blend = BLEND_NORMAL);
-	void applyColorKey(uint8 rKey, uint8 gKey, uint8 bKey, bool overwriteAlpha, uint8 newR, uint8 newG, uint8 newB);
+	void applyColorKey(uint8 rKey, uint8 gKey, uint8 bKey, bool overwriteAlpha, uint8 newR = -1, uint8 newG = -1, uint8 newB = -1);
 
 	/**
 	 * @brief Scale function; this returns a transformed version of this surface after rotation and
