@@ -469,7 +469,7 @@ Common::Rect TransparentSurface::blit(Graphics::Surface &target, int posX, int p
  * @param bKey  the blue component of the color key
  * @param overwriteAlpha if true, all other alpha will be set fully opaque
  */
-void TransparentSurface::applyColorKey(uint8 rKey, uint8 gKey, uint8 bKey, bool overwriteAlpha) {
+void TransparentSurface::applyColorKey(uint8 rKey, uint8 gKey, uint8 bKey, bool overwriteAlpha, uint8 newR, uint8 newG, uint8 newB) {
 	assert(format.bytesPerPixel == 4);
 	for (int i = 0; i < h; i++) {
 		for (int j = 0; j < w; j++) {
@@ -478,6 +478,9 @@ void TransparentSurface::applyColorKey(uint8 rKey, uint8 gKey, uint8 bKey, bool 
 			format.colorToARGB(pix, a, r, g, b);
 			if (r == rKey && g == gKey && b == bKey) {
 				a = 0;
+				r = newR >= 0 ? newR : rKey;
+				g = newG >= 0 ? newG : gKey;
+				b = newB >= 0 ? newB : bKey;
 				((uint32 *)pixels)[i * w + j] = format.ARGBToColor(a, r, g, b);
 			} else if (overwriteAlpha) {
 				a = 255;
