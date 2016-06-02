@@ -150,7 +150,7 @@ private:
 	ManagedSurface _composeSurface;
 
 	NinePatchBitmap *_bmp;
-	TransparentSurface *_borders = nullptr;
+	TransparentSurface *_borders;
 
 	bool _scrollable;
 	bool _resizable;

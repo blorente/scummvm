@@ -150,16 +150,24 @@ bool MacWindow::draw(ManagedSurface *g, bool forceRedraw) {
 	_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w - 2, _surface.h - 2), Common::Point(2, 2));
 	_composeSurface.transBlitFrom(_borderSurface, kColorGreen);
 
-	if (_borders) {
-		TransparentSurface tr(*_borders);
-		//tr.create(_composeSurface.w, _composeSurface.h, tr.getSupportedPixelFormat());
-
-		//_bmp->blit(tr, 0, 0, tr.w, tr.h)
-		_composeSurface.transBlitFrom(tr);
-	}
-
 	g->transBlitFrom(_composeSurface, _composeSurface.getBounds(), Common::Point(_dims.left - 2, _dims.top - 2), kColorGreen2);
 
+
+	if (_borders) {
+		// 9PATCH SCALING
+		TransparentSurface srf;
+		srf.create(_borders->w * 2, _borders->h * 2, _borders->format);
+		
+		_bmp = new NinePatchBitmap(_borders, false);
+		
+		_bmp->blit(srf, 0, 0, srf.w, srf.h);
+		g->transBlitFrom(srf, Common::Rect(0, 0, srf.w, srf.h), Common::Point(_dims.left - 2, _dims.top - 2), g->format.ARGBToColor(0, 255, 255, 255));
+		
+		//g->transBlitFrom(*_borders, Common::Rect(0, 0, _borders->w, _borders->h), Common::Point(_dims.left - 2, _dims.top - 2), g->format.ARGBToColor(0, 255, 255, 255));
+
+	}
+	
+	
 	return true;
 }
 
@@ -290,7 +298,6 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
  }
 
  void MacWindow::setBorders(TransparentSurface *source) {
-	 _bmp = new NinePatchBitmap(source, true);
 	 _borders = new TransparentSurface(*source);
  }
 
