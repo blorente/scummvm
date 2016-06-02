@@ -139,6 +139,9 @@ public:
 
 private:
 	void drawBorder();
+	void prepareBorderSurface(ManagedSurface *g);
+	void drawSimpleBorder(ManagedSurface *g);
+	void drawBorderFromSurface(ManagedSurface *g);
 	void drawBox(ManagedSurface *g, int x, int y, int w, int h);
 	void fillRect(ManagedSurface *g, int x, int y, int w, int h, int color);
 	const Font *getTitleFont();
