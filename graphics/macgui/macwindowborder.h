@@ -57,6 +57,7 @@
 
 namespace Graphics {
 
+
 class MacWindowBorder {
 public:
 	MacWindowBorder();

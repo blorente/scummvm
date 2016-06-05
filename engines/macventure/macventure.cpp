@@ -104,7 +104,6 @@ void MacVentureEngine::initGUI() {
 	w->setActive(false);
 
 	loadBorder(w, "border_inac.bmp", false);
-
 }
 
 void MacVentureEngine::loadBorder(Graphics::MacWindow *target, Common::String filename, bool active) {

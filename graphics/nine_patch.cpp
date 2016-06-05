@@ -48,6 +48,8 @@
 #include "graphics/transparent_surface.h"
 #include "graphics/nine_patch.h"
 
+#include "graphics/managed_surface.h"
+
 namespace Graphics {
 
 NinePatchSide::~NinePatchSide() {
@@ -204,7 +206,7 @@ bad_bitmap:
 void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, int dh) {
 	/* don't draw bitmaps that are smaller than the fixed area */
 	if (dw < _h._fix || dh < _v._fix)
-		return;
+		return;	
 
 	/* if the bitmap is the same size as the origin, then draw it as-is */
 	if (dw == _width && dh == _height) {
@@ -221,6 +223,33 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 
 		_cached_dw = dw;
 		_cached_dh = dh;
+	}
+
+	/* Handle CLUT8 */
+	if (target.format.bytesPerPixel == 1) {
+		Surface srf;
+		srf.create(target.w, target.h, _bmp->format);
+
+		/* draw each region */
+		for (uint i = 0; i < _v._m.size(); ++i) {
+			for (uint j = 0; j < _h._m.size(); ++j) {
+				Common::Rect r(_h._m[j]->offset, _v._m[i]->offset,
+					_h._m[j]->offset + _h._m[j]->length, _v._m[i]->offset + _v._m[i]->length);
+
+				_bmp->blit(srf, dx + _h._m[j]->dest_offset, dy + _v._m[i]->dest_offset,
+					Graphics::FLIP_NONE, &r, TS_ARGB(255, 255, 255, 255),
+					_h._m[j]->dest_length, _v._m[i]->dest_length);
+			}
+		}	
+
+		for (uint i = 0; i < srf.w; ++i) {
+			for (uint j = 0; j < srf.h; ++j) {
+				uint32 color = *(uint32*)srf.getBasePtr(i, j);
+				if (color > 0) {
+					*((byte *)target.getBasePtr(i, j)) = 1;						
+				}
+			}
+		}
 	}
 
 	/* draw each region */

@@ -68,7 +68,8 @@ namespace MacGUIConstants {
 		kColorGray = 1,
 		kColorWhite = 2,
 		kColorGreen = 3,
-		kColorGreen2 = 4
+		kColorGreen2 = 4,
+		kColorCount
 	};
 
 	enum {

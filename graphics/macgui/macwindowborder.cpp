@@ -1,7 +1,14 @@
 #include "macwindowborder.h"
 
+#include "common/system.h"
+
+#include "graphics/macgui/macwindowmanager.h"
+
+
 namespace Graphics {
 
+using namespace Graphics::MacGUIConstants;
+	
 MacWindowBorder::MacWindowBorder() : _activeInitialized(false), _inactiveInitialized(false) {
 	_activeBorder = nullptr;
 	_inactiveBorder = nullptr;	
@@ -32,11 +39,11 @@ void MacWindowBorder::addInactiveBorder(TransparentSurface &source) {
 }
 
 void MacWindowBorder::blitBorderInto(ManagedSurface &destination, bool active) {
-
+	
 	TransparentSurface srf;
 	NinePatchBitmap *src = active ? _activeBorder : _inactiveBorder;
 
-	srf.create(destination.w, destination.h, src->getSource()->format);
+	srf.create(destination.w, destination.h, destination.format);
 
 	src->blit(srf, 0, 0, srf.w, srf.h);
 	destination.transBlitFrom(srf, destination.format.ARGBToColor(0, 255, 255, 255));
