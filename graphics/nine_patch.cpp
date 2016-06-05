@@ -250,6 +250,8 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 				}
 			}
 		}
+
+		return;
 	}
 
 	/* draw each region */
