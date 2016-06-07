@@ -203,7 +203,7 @@ bad_bitmap:
 	}
 }
 
-void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, int dh) {
+void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, int dh, byte *palette) {
 	/* don't draw bitmaps that are smaller than the fixed area */
 	if (dw < _h._fix || dh < _v._fix)
 		return;	
@@ -227,6 +227,9 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 
 	/* Handle CLUT8 */
 	if (target.format.bytesPerPixel == 1) {
+		if (!palette)
+			warning("Trying to blit into a surface with 1bpp, you need the palette.");
+
 		Surface srf;
 		srf.create(target.w, target.h, _bmp->format);
 
@@ -242,11 +245,14 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 			}
 		}	
 
+		byte black = getColorIndex(TS_RGB(0, 0, 0), palette);
+		byte white = getColorIndex(TS_RGB(255, 255, 255), palette);
+
 		for (uint i = 0; i < srf.w; ++i) {
 			for (uint j = 0; j < srf.h; ++j) {
 				uint32 color = *(uint32*)srf.getBasePtr(i, j);
 				if (color > 0) {
-					*((byte *)target.getBasePtr(i, j)) = 1;						
+					*((byte *)target.getBasePtr(i, j)) = grayscale(color) <= 126 ? black : white;
 				}
 			}
 		}
@@ -270,6 +276,23 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 NinePatchBitmap::~NinePatchBitmap() {
 	if (_destroy_bmp)
 		delete _bmp;
+}
+
+byte NinePatchBitmap::getColorIndex(uint32 target, byte* palette) {
+	byte *pal = palette;
+	uint i = 0;
+	uint32 color = TS_RGB(pal[0], pal[1], pal[2]);
+	while (color != target) {
+		i += 3;
+		color = TS_RGB(pal[i], pal[i + 1], pal[i + 2]);
+	}
+	return (i / 3);
+}
+
+uint32 NinePatchBitmap::grayscale(uint32 color) {
+	byte r, g, b;
+	_bmp->format.colorToRGB(color, r, g, b);
+	return (r + g + b) / 3;
 }
 
 } // end of namespace Graphics
