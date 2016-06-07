@@ -232,18 +232,8 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 
 		Surface srf;
 		srf.create(target.w, target.h, _bmp->format);
-
-		/* draw each region */
-		for (uint i = 0; i < _v._m.size(); ++i) {
-			for (uint j = 0; j < _h._m.size(); ++j) {
-				Common::Rect r(_h._m[j]->offset, _v._m[i]->offset,
-					_h._m[j]->offset + _h._m[j]->length, _v._m[i]->offset + _v._m[i]->length);
-
-				_bmp->blit(srf, dx + _h._m[j]->dest_offset, dy + _v._m[i]->dest_offset,
-					Graphics::FLIP_NONE, &r, TS_ARGB(255, 255, 255, 255),
-					_h._m[j]->dest_length, _v._m[i]->dest_length);
-			}
-		}	
+				
+		drawRegions(srf, dx, dy, dw, dh);
 
 		byte black = getColorIndex(TS_RGB(0, 0, 0), palette);
 		byte white = getColorIndex(TS_RGB(255, 255, 255), palette);
@@ -260,22 +250,28 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 		return;
 	}
 
-	/* draw each region */
-	for (uint i = 0; i < _v._m.size(); ++i) {
-		for (uint j = 0; j < _h._m.size(); ++j) {
-			Common::Rect r(_h._m[j]->offset, _v._m[i]->offset,
-						_h._m[j]->offset + _h._m[j]->length, _v._m[i]->offset + _v._m[i]->length);
-
-			_bmp->blit(target, dx + _h._m[j]->dest_offset, dy + _v._m[i]->dest_offset,
-					Graphics::FLIP_NONE, &r, TS_ARGB(255, 255, 255, 255),
-					_h._m[j]->dest_length, _v._m[i]->dest_length);
-		}
-	}
+	/* Else, draw regions normally */
+	drawRegions(target, dx, dy, dw, dh);
+	
 }
 
 NinePatchBitmap::~NinePatchBitmap() {
 	if (_destroy_bmp)
 		delete _bmp;
+}
+
+void NinePatchBitmap::drawRegions(Graphics::Surface &target, int dx, int dy, int dw, int dh) {
+	/* draw each region */
+	for (uint i = 0; i < _v._m.size(); ++i) {
+		for (uint j = 0; j < _h._m.size(); ++j) {
+			Common::Rect r(_h._m[j]->offset, _v._m[i]->offset,
+				_h._m[j]->offset + _h._m[j]->length, _v._m[i]->offset + _v._m[i]->length);
+
+			_bmp->blit(target, dx + _h._m[j]->dest_offset, dy + _v._m[i]->dest_offset,
+				Graphics::FLIP_NONE, &r, TS_ARGB(255, 255, 255, 255),
+				_h._m[j]->dest_length, _v._m[i]->dest_length);
+		}
+	}
 }
 
 byte NinePatchBitmap::getColorIndex(uint32 target, byte* palette) {
