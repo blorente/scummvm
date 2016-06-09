@@ -30,6 +30,8 @@ namespace MacVenture {
 
 enum MenuAction;
 
+const bool kLoadStaticMenus = true;
+
 enum {
 	kMenuHighLevel = -1,
 	kMenuAbout = 0,
@@ -108,7 +110,7 @@ void Gui::initGUI() {
 	loadBorder(_outConsoleWindow, "border_inac.bmp", false);	
 }
 
-void Gui::loadBorder(Graphics::MacWindow * target, Common::String filename, bool active) {
+void Gui::loadBorder(Graphics::MacWindow *target, Common::String filename, bool active) {
 	Common::File borderfile;
 
 	if (!borderfile.open(filename)) {
@@ -116,22 +118,11 @@ void Gui::loadBorder(Graphics::MacWindow * target, Common::String filename, bool
 		return;
 	}
 
-	Image::BitmapDecoder bmpDecoder;
 	Common::SeekableReadStream *stream = borderfile.readStream(borderfile.size());
-	Graphics::Surface source;
-	Graphics::TransparentSurface *surface = new Graphics::TransparentSurface();
 
 	if (stream) {
-		debug(4, "Loading %s border from %s", (active ? "active" : "inactive"), filename);
-		bmpDecoder.loadStream(*stream);
-		source = *(bmpDecoder.getSurface());
-
-		source.convertToInPlace(surface->getSupportedPixelFormat(), bmpDecoder.getPalette());
-		surface->create(source.w, source.h, source.format);
-		surface->copyFrom(source);
-		surface->applyColorKey(255, 0, 255, false);
-
-		target->setBorder(*surface, active);
+		debug(4, "Loading %s border from %s", (active ? "active" : "inactive"), filename.c_str());
+		target->loadBorder(*stream, active);
 
 		borderfile.close();
 
@@ -141,8 +132,8 @@ void Gui::loadBorder(Graphics::MacWindow * target, Common::String filename, bool
 
 bool Gui::loadMenus() {
 
-	// We assume that, if there are static menus, we don't need dynamic ones
-	if (menuSubItems) {
+	if (kLoadStaticMenus) {
+		// We assume that, if there are static menus, we don't need dynamic ones	
 		_menu->addStaticMenus(menuSubItems);
 		return true;
 	}
@@ -178,7 +169,7 @@ bool Gui::loadMenus() {
 			_menu->addMenuItem(title);
 
 			// Read submenu items
-			while (titleLength = res->readByte()) {
+			while ((titleLength = res->readByte())) {
 				title = new char[titleLength + 1];
 				res->read(title, titleLength);
 				title[titleLength] = '\0';
@@ -190,14 +181,14 @@ bool Gui::loadMenus() {
 				res->readUint16BE();
 				// Read style
 				style = res->readUint16BE();
-				_menu->addMenuSubItem(i, title, 0, style, key, false);
+				_menu->addMenuSubItem(i, title, 0, style, key, enabled);
 			}
 		}	
 
 		i++;
 	}
 
-	return true;	
+	return true;
 }
 
 /* CALLBACKS */

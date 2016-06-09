@@ -50,6 +50,7 @@
 #include "common/events.h"
 #include "graphics/macgui/macwindowmanager.h"
 #include "graphics/macgui/macwindow.h"
+#include "image/bmp.h"
 
 namespace Graphics {
 
@@ -299,11 +300,26 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 	_borderIsDirty = true;
  }
 
- void MacWindow::setBorder(TransparentSurface &border, bool active) {
-	 if (active)
-		 _macBorder.addActiveBorder(border);
-	 else
-		 _macBorder.addInactiveBorder(border);
+
+ void MacWindow::loadBorder(Common::SeekableReadStream &file, bool active) {
+
+	Image::BitmapDecoder bmpDecoder;
+	Graphics::Surface source;
+	Graphics::TransparentSurface *surface = new Graphics::TransparentSurface();
+	
+	bmpDecoder.loadStream(file);
+	source = *(bmpDecoder.getSurface());
+
+	source.convertToInPlace(surface->getSupportedPixelFormat(), bmpDecoder.getPalette());
+	surface->create(source.w, source.h, source.format);
+	surface->copyFrom(source);
+	surface->applyColorKey(255, 0, 255, false);
+
+	if (active)
+		_macBorder.addActiveBorder(*surface);
+	else
+		_macBorder.addInactiveBorder(*surface);
+	 
  }
 
 void MacWindow::drawBox(ManagedSurface *g, int x, int y, int w, int h) {

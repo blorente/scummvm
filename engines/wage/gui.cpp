@@ -370,24 +370,13 @@ void Gui::loadBorder(Graphics::MacWindow *target, Common::String filename, bool 
 	if (!borderfile.open(filename)) {
 		debug(1, "Cannot open border file");
 		return;
-	}
-
-	Image::BitmapDecoder bmpDecoder;
+	}	
+	
 	Common::SeekableReadStream *stream = borderfile.readStream(borderfile.size());
-	Graphics::Surface source;
-	Graphics::TransparentSurface *surface  = new Graphics::TransparentSurface();
 
 	if (stream) {
-		debug(4, "Loading %s border from %s", (active ? "active" : "inactive"), filename);
-		bmpDecoder.loadStream(*stream);
-		source = *(bmpDecoder.getSurface());
-
-		source.convertToInPlace(surface->getSupportedPixelFormat(), bmpDecoder.getPalette());
-		surface->create(source.w, source.h, source.format);
-		surface->copyFrom(source);
-		surface->applyColorKey(255, 0, 255, false);
-
-		target->setBorder(*surface, active);
+		debug(4, "Loading %s border from %s", (active ? "active" : "inactive"), filename.c_str());
+		target->loadBorder(*stream, active);
 
 		borderfile.close();
 

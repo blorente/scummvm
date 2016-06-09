@@ -138,7 +138,7 @@ public:
 	bool processEvent(Common::Event &event);
 	bool hasAllFocus() { return _beingDragged || _beingResized; }
 
-	void setBorder(TransparentSurface &border, bool active);
+	void loadBorder(Common::SeekableReadStream &file, bool active);
 
 private:
 	void drawBorder();
