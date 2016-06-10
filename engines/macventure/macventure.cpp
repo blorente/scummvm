@@ -87,6 +87,10 @@ Common::Error MacVentureEngine::run() {
 	return Common::kNoError;
 }
 
+void MacVentureEngine::requestQuit() {
+	_shouldQuit = true;
+}
+
 void MacVentureEngine::processEvents() {
 	Common::Event event;
 

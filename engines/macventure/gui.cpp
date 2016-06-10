@@ -300,7 +300,7 @@ void Gui::handleMenuAction(MenuAction action) {
 		debug("MacVenture Menu Action: Save As");
 		break;
 	case MacVenture::kMenuActionQuit:
-		debug("MacVenture Menu Action: Quit");
+		_engine->requestQuit();
 		break;
 	case MacVenture::kMenuActionUndo:
 		debug("MacVenture Menu Action: Undo");

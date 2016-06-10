@@ -58,6 +58,8 @@ public:
 
 	virtual Common::Error run();
 
+	void requestQuit();
+
 private:
 	void processEvents();
 	
