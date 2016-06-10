@@ -59,6 +59,7 @@ public:
 	virtual Common::Error run();
 
 	void requestQuit();
+	bool isPaused();
 
 private:
 	void processEvents();
@@ -75,6 +76,8 @@ private: // Attributes
 	Gui *_gui;
 
 	bool _shouldQuit;
+
+	bool _paused;
 
 private: // Methods
 

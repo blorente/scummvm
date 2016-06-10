@@ -74,6 +74,7 @@ Common::Error MacVentureEngine::run() {
 
 	_gui = new Gui(this, _resourceManager);
 
+	_paused = true;
 	_shouldQuit = false;
 	while (!_shouldQuit) {
 		processEvents();
@@ -84,11 +85,17 @@ Common::Error MacVentureEngine::run() {
 		g_system->delayMillis(50);
 	}
 
+	_resourceManager->close();
+
 	return Common::kNoError;
 }
 
 void MacVentureEngine::requestQuit() {
 	_shouldQuit = true;
+}
+
+bool MacVentureEngine::isPaused() {
+	return _paused;
 }
 
 void MacVentureEngine::processEvents() {

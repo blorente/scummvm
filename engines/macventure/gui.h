@@ -27,11 +27,15 @@
 #include "graphics/macgui/macwindow.h"
 #include "graphics/macgui/macmenu.h"
 
+#include "graphics/font.h"
+
 namespace MacVenture {
 
 using namespace Graphics::MacGUIConstants;
 using namespace Graphics::MacWindowConstants;
 class MacVentureEngine;
+
+class CommandButton;
 
 enum MenuAction {
 	kMenuActionAbout,
@@ -107,6 +111,8 @@ public:
 
 	const WindowData& getWindowData(WindowReference reference);
 
+	const Graphics::Font& getCurrentFont();
+
 private: // Attributes
 
 	MacVentureEngine *_engine;
@@ -116,7 +122,7 @@ private: // Attributes
 	Graphics::MacWindowManager _wm;
 
 	Common::List<WindowData> *_windowData;
-	Common::List<ControlData> *_controlData;
+	Common::List<CommandButton> *_controlData;
 
 	Graphics::MacWindow *_outConsoleWindow;
 	Graphics::MacWindow *_controlsWindow;
@@ -131,6 +137,41 @@ private: // Methods
 	bool loadControls();
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
+};
+
+class CommandButton {
+public:
+	CommandButton(ControlData data, Gui *g) {
+		_data = data;
+		_gui = g;
+	}
+	~CommandButton() {}
+
+	void draw(Graphics::ManagedSurface &surface) {
+		if (_data.titleLength > 1) {
+			const Graphics::Font &font = _gui->getCurrentFont();
+			Common::String title(_data.title);
+			font.drawString(
+				&surface,
+				title,
+				_data.bounds.left + surface.getBounds().left,
+				_data.bounds.top + surface.getBounds().top,
+				font.getStringWidth(title), 
+				kColorBlack);
+		}
+	}
+
+	bool isInsideBounds(Common::Point point) {
+		return _data.bounds.contains(point);
+	}
+
+	const ControlData& getData() {
+		return _data;
+	}
+
+private:
+	ControlData _data;
+	Gui *_gui;
 };
 
 } // End of namespace MacVenture

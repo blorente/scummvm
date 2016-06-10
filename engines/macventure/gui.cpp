@@ -100,6 +100,13 @@ Gui::~Gui() {
 
 void Gui::draw() {
 	_wm.draw();
+
+	Common::List<CommandButton>::const_iterator it = _controlData->begin();
+	for (; it != _controlData->end(); ++it) {
+		CommandButton button = *it;
+		if (button.getData().refcon != kControlExitBox)
+			button.draw(_screen);
+	}
 }
 
 bool Gui::processEvent(Common::Event &event) {
@@ -117,6 +124,10 @@ const WindowData& Gui::getWindowData(WindowReference reference) {
 		return *iter;
 
 	error("Could not locate the desired window data");
+}
+
+const Graphics::Font& Gui::getCurrentFont() {
+	return *_wm.getFont("Chicago-12", Graphics::FontManager::kBigGUIFont);
 }
 
 void Gui::initGUI() {
@@ -146,7 +157,7 @@ void Gui::initWindows() {
 	_outConsoleWindow = _wm.addWindow(false, true, true);
 	_outConsoleWindow->setDimensions(getWindowData(kOutConsoleWindow).bounds);
 	_outConsoleWindow->setActive(false);
-	_outConsoleWindow->setCallback(outConsoleWindowCallback, this);
+	_outConsoleWindow->setCallback(outConsoleWindowCallback, this);	
 	loadBorder(_outConsoleWindow, "border_inac.bmp", false);
 	
 	// Game Controls Window
@@ -282,7 +293,7 @@ bool Gui::loadControls() {
 	Common::SeekableReadStream *res;
 	Common::MacResIDArray::const_iterator iter;
 
-	_controlData = new Common::List<ControlData>();
+	_controlData = new Common::List<CommandButton>();
 
 	if ((resArray = _resourceManager->getResIDArray(MKTAG('C', 'N', 'T', 'L'))).size() == 0)
 		return false;
@@ -296,6 +307,7 @@ bool Gui::loadControls() {
 		left = res->readUint16BE();
 		bottom = res->readUint16BE();
 		right = res->readUint16BE();
+		Common::Rect bounds(left, top, right, bottom); // For some reason, if I remove this it segfaults
 		data.bounds = Common::Rect(left, top, right, bottom);
 		data.scrollValue = res->readUint16BE();
 		data.visible = res->readByte();
@@ -312,7 +324,7 @@ bool Gui::loadControls() {
 			data.title[data.titleLength] = '\0';
 		}
 
-		_controlData->push_back(data);
+		_controlData->push_back(CommandButton(data, this));
 	}
 
 	return true;
@@ -325,6 +337,7 @@ bool outConsoleWindowCallback(Graphics::WindowClick, Common::Event &event, void 
 
 bool controlsWindowCallback(Graphics::WindowClick, Common::Event &event, void *gui) {
 	debug("Controls window");
+	
 	return true;
 }
 
