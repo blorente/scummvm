@@ -42,6 +42,10 @@ enum {
 	kMenuSpecial = 3
 };
 
+enum {
+	kCommandNum = 8
+};
+
 static const Graphics::MenuData menuSubItems[] = {
 	{ kMenuHighLevel,	"File",				0, 0, false },
 	{ kMenuHighLevel,	"Edit",				0, 0, false },		
@@ -80,6 +84,7 @@ Gui::Gui(MacVentureEngine *engine, Common::MacResManager *resman) {
 	_engine = engine;
 	_resourceManager = resman;
 	_windowData = nullptr;
+	_controlData = nullptr;
 
 	initGUI();
 }
@@ -88,6 +93,9 @@ Gui::~Gui() {
 
 	if (_windowData)
 		delete _windowData;
+
+	if (_controlData)
+		delete _controlData;
 }
 
 void Gui::draw() {
@@ -126,6 +134,9 @@ void Gui::initGUI() {
 		error("Could not load windows");
 	
 	initWindows();
+
+	if (!loadControls())
+		error("Could not load controls");
 	
 }
 
@@ -254,12 +265,54 @@ bool Gui::loadWindows() {
 		data.refcon = (WindowReference)id; id++;
 		res->readUint32BE(); // Skip the true id. For some reason it's reading 0
 		data.titleLength = res->readByte();
-		if (data.titleLength)
+		if (data.titleLength) {
 			data.title = new char[data.titleLength + 1];
-		res->read(data.title, data.titleLength);
-		data.title[data.titleLength] = '\0';		
+			res->read(data.title, data.titleLength);
+			data.title[data.titleLength] = '\0';
+		}
 
 		_windowData->push_back(data);
+	}
+
+	return true;
+}
+
+bool Gui::loadControls() {
+	Common::MacResIDArray resArray;
+	Common::SeekableReadStream *res;
+	Common::MacResIDArray::const_iterator iter;
+
+	_controlData = new Common::List<ControlData>();
+
+	if ((resArray = _resourceManager->getResIDArray(MKTAG('C', 'N', 'T', 'L'))).size() == 0)
+		return false;
+
+	uint32 id = kControlExitBox;
+	for (iter = resArray.begin(); iter != resArray.end(); ++iter) {
+		res = _resourceManager->getResource(MKTAG('C', 'N', 'T', 'L'), *iter);
+		ControlData data;
+		uint16 top, left, bottom, right;
+		top = res->readUint16BE();
+		left = res->readUint16BE();
+		bottom = res->readUint16BE();
+		right = res->readUint16BE();
+		data.bounds = Common::Rect(left, top, right, bottom);
+		data.scrollValue = res->readUint16BE();
+		data.visible = res->readByte();
+		res->readByte(); // Unused
+		data.scrollMax = res->readUint16BE();
+		data.scrollMin = res->readUint16BE();
+		data.cdef = res->readUint16BE();
+		data.refcon = (ControlReference)id; id++;
+		res->readUint32BE();
+		data.titleLength = res->readByte();
+		if (data.titleLength) {
+			data.title = new char[data.titleLength + 1];
+			res->read(data.title, data.titleLength);
+			data.title[data.titleLength] = '\0';
+		}
+
+		_controlData->push_back(data);
 	}
 
 	return true;

@@ -70,6 +70,31 @@ struct WindowData {
 	char* title;
 };
 
+enum ControlReference {
+	kControlExitBox = 0,
+	kControlExamine = 1,
+	kControlOpen = 2,
+	kControlClose = 3,
+	kControlSpeak = 4,
+	kControlOperate = 5,
+	kControlGo = 6,
+	kControlHit = 7,
+	kControlConsume = 8
+};
+
+struct ControlData {
+	Common::Rect bounds;
+	uint16 scrollValue;
+	uint8 visible;
+	uint16 scrollMax;
+	uint16 scrollMin;
+	uint16 cdef;
+	uint32 refcon;
+	uint8 titleLength;
+	char* title;
+};
+
+
 class Gui {	
 
 public:
@@ -91,6 +116,7 @@ private: // Attributes
 	Graphics::MacWindowManager _wm;
 
 	Common::List<WindowData> *_windowData;
+	Common::List<ControlData> *_controlData;
 
 	Graphics::MacWindow *_outConsoleWindow;
 	Graphics::MacWindow *_controlsWindow;
@@ -102,6 +128,7 @@ private: // Methods
 	void initWindows();
 	bool loadMenus();
 	bool loadWindows();
+	bool loadControls();
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
 };
