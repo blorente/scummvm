@@ -33,7 +33,6 @@ using namespace Graphics::MacGUIConstants;
 using namespace Graphics::MacWindowConstants;
 class MacVentureEngine;
 
-//namespace MacVentureMenuActions {
 enum MenuAction {
 	kMenuActionAbout,
 	kMenuActionNew,
@@ -51,7 +50,25 @@ enum MenuAction {
 
 	kMenuActionCommand
 };
-//} using namespace MacVentureMenuActions;
+
+enum WindowReference {
+	kCommandsWindow = 0x80,
+	kMainGameWindow = 0x81,
+	kOutConsoleWindow = 0x82,
+	kSelfWindow = 0x83,
+	kExitsWindow = 0x84,
+	kDiplomaWindow = 0x85
+};
+
+struct WindowData {
+	Common::Rect bounds;
+	uint16 type;
+	uint16 visible;
+	uint16 hasCloseBox;
+	WindowReference refcon;
+	uint8 titleLength;
+	char* title;
+};
 
 class Gui {	
 
@@ -63,6 +80,8 @@ public:
 	bool processEvent(Common::Event &event);
 	void handleMenuAction(MenuAction action);
 
+	const WindowData& getWindowData(WindowReference reference);
+
 private: // Attributes
 
 	MacVentureEngine *_engine;
@@ -71,13 +90,18 @@ private: // Attributes
 	Graphics::ManagedSurface _screen;
 	Graphics::MacWindowManager _wm;
 
+	Common::List<WindowData> *_windowData;
+
 	Graphics::MacWindow *_outConsoleWindow;
+	Graphics::MacWindow *_controlsWindow;
 	Graphics::Menu *_menu;
 
 private: // Methods
 
 	void initGUI();
+	void initWindows();
 	bool loadMenus();
+	bool loadWindows();
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
 };

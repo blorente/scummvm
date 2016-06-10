@@ -29,6 +29,8 @@
 namespace MacVenture {
 
 enum MenuAction;
+struct WindowData;
+enum WindowReference;
 
 const bool kLoadStaticMenus = true;
 
@@ -71,16 +73,21 @@ static const Graphics::MenuData menuSubItems[] = {
 };
 
 bool outConsoleWindowCallback(Graphics::WindowClick, Common::Event &event, void *gui);
+bool controlsWindowCallback(Graphics::WindowClick, Common::Event &event, void *gui);
 void menuCommandsCallback(int action, Common::String &text, void *data);
 
 Gui::Gui(MacVentureEngine *engine, Common::MacResManager *resman) {
 	_engine = engine;
 	_resourceManager = resman;
+	_windowData = nullptr;
+
 	initGUI();
 }
 
 Gui::~Gui() {
 
+	if (_windowData)
+		delete _windowData;
 }
 
 void Gui::draw() {
@@ -89,6 +96,19 @@ void Gui::draw() {
 
 bool Gui::processEvent(Common::Event &event) {
 	return _wm.processEvent(event);
+}
+
+const WindowData& Gui::getWindowData(WindowReference reference) {
+	assert(_windowData);
+	Common::List<WindowData>::const_iterator iter = _windowData->begin();
+	while (iter->refcon != reference && iter != _windowData->end()) {
+		iter++;
+	}
+
+	if (iter->refcon == reference)
+		return *iter;
+
+	error("Could not locate the desired window data");
 }
 
 void Gui::initGUI() {
@@ -102,12 +122,29 @@ void Gui::initGUI() {
 	_menu->setCommandsCallback(menuCommandsCallback, this);
 	_menu->calcDimensions();
 
+	if (!loadWindows())
+		error("Could not load windows");
+	
+	initWindows();
+	
+}
+
+void Gui::initWindows() {
+	
 	// In-game Output Console
 	_outConsoleWindow = _wm.addWindow(false, true, true);
-	_outConsoleWindow->setDimensions(Common::Rect(20, 20, 120, 120));
+	_outConsoleWindow->setDimensions(getWindowData(kOutConsoleWindow).bounds);
 	_outConsoleWindow->setActive(false);
 	_outConsoleWindow->setCallback(outConsoleWindowCallback, this);
-	loadBorder(_outConsoleWindow, "border_inac.bmp", false);	
+	loadBorder(_outConsoleWindow, "border_inac.bmp", false);
+	
+	// Game Controls Window
+	_controlsWindow = _wm.addWindow(false, false, false);
+	_controlsWindow->setDimensions(getWindowData(kCommandsWindow).bounds);
+	_controlsWindow->setActive(false);
+	_controlsWindow->setCallback(controlsWindowCallback, this);
+	loadBorder(_controlsWindow, "border_inac.bmp", false);
+	
 }
 
 void Gui::loadBorder(Graphics::MacWindow *target, Common::String filename, bool active) {
@@ -191,8 +228,50 @@ bool Gui::loadMenus() {
 	return true;
 }
 
+bool Gui::loadWindows() {
+	Common::MacResIDArray resArray;
+	Common::SeekableReadStream *res;
+	Common::MacResIDArray::const_iterator iter;
+
+	_windowData = new Common::List<WindowData>();
+
+	if ((resArray = _resourceManager->getResIDArray(MKTAG('W', 'I', 'N', 'D'))).size() == 0)
+		return false;
+
+	uint32 id = kCommandsWindow;
+	for (iter = resArray.begin(); iter != resArray.end(); ++iter) {
+		res = _resourceManager->getResource(MKTAG('W', 'I', 'N', 'D'), *iter);
+		WindowData data;
+		uint16 top, left, bottom, right;
+		top = res->readUint16BE();
+		left = res->readUint16BE();
+		bottom = res->readUint16BE();
+		right = res->readUint16BE();
+		data.bounds = Common::Rect(left, top, right, bottom);
+		data.type = res->readUint16BE();
+		data.visible = res->readUint16BE();
+		data.hasCloseBox = res->readUint16BE();
+		data.refcon = (WindowReference)id; id++;
+		res->readUint32BE(); // Skip the true id. For some reason it's reading 0
+		data.titleLength = res->readByte();
+		if (data.titleLength)
+			data.title = new char[data.titleLength + 1];
+		res->read(data.title, data.titleLength);
+		data.title[data.titleLength] = '\0';		
+
+		_windowData->push_back(data);
+	}
+
+	return true;
+}
+
 /* CALLBACKS */
 bool outConsoleWindowCallback(Graphics::WindowClick, Common::Event &event, void *gui) {
+	return true;
+}
+
+bool controlsWindowCallback(Graphics::WindowClick, Common::Event &event, void *gui) {
+	debug("Controls window");
 	return true;
 }
 

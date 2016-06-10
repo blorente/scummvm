@@ -251,8 +251,7 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 	}
 
 	/* Else, draw regions normally */
-	drawRegions(target, dx, dy, dw, dh);
-	
+	drawRegions(target, dx, dy, dw, dh);	
 }
 
 NinePatchBitmap::~NinePatchBitmap() {
