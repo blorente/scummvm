@@ -105,7 +105,7 @@ void Gui::draw() {
 	for (; it != _controlData->end(); ++it) {
 		CommandButton button = *it;
 		if (button.getData().refcon != kControlExitBox)
-			button.draw(_screen);
+			button.draw(*_controlsWindow->getSurface());
 	}
 }
 
@@ -148,6 +148,8 @@ void Gui::initGUI() {
 
 	if (!loadControls())
 		error("Could not load controls");
+
+	draw();
 	
 }
 
@@ -158,15 +160,15 @@ void Gui::initWindows() {
 	_outConsoleWindow->setDimensions(getWindowData(kOutConsoleWindow).bounds);
 	_outConsoleWindow->setActive(false);
 	_outConsoleWindow->setCallback(outConsoleWindowCallback, this);	
-	loadBorder(_outConsoleWindow, "border_inac.bmp", false);
+	loadBorder(_outConsoleWindow, "border_command.bmp", false);
 	
 	// Game Controls Window
 	_controlsWindow = _wm.addWindow(false, false, false);
 	_controlsWindow->setDimensions(getWindowData(kCommandsWindow).bounds);
 	_controlsWindow->setActive(false);
 	_controlsWindow->setCallback(controlsWindowCallback, this);
-	loadBorder(_controlsWindow, "border_inac.bmp", false);
-	
+	loadBorder(_controlsWindow, "border_command.bmp", false);	
+
 }
 
 void Gui::loadBorder(Graphics::MacWindow *target, Common::String filename, bool active) {

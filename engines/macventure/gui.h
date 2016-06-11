@@ -140,6 +140,12 @@ private: // Methods
 };
 
 class CommandButton {
+
+enum {
+	kCommandsLeftPadding = 0,
+	kCommandsTopPadding = 0
+};
+
 public:
 	CommandButton(ControlData data, Gui *g) {
 		_data = data;
@@ -148,17 +154,22 @@ public:
 	~CommandButton() {}
 
 	void draw(Graphics::ManagedSurface &surface) {
-		if (_data.titleLength > 1) {
-			const Graphics::Font &font = _gui->getCurrentFont();
-			Common::String title(_data.title);
-			font.drawString(
-				&surface,
-				title,
-				_data.bounds.left + surface.getBounds().left,
-				_data.bounds.top + surface.getBounds().top,
-				font.getStringWidth(title), 
-				kColorBlack);
-		}
+		
+		
+		surface.fillRect(_data.bounds, kColorWhite);
+		surface.frameRect(_data.bounds, kColorBlack);
+
+		const Graphics::Font &font = _gui->getCurrentFont();
+		Common::String title(_data.title);
+		font.drawString(
+			&surface,
+			title,
+			_data.bounds.left,
+			_data.bounds.top,
+			_data.bounds.right - _data.bounds.left, 
+			kColorBlack,
+			Graphics::kTextAlignCenter);
+				
 	}
 
 	bool isInsideBounds(Common::Point point) {
