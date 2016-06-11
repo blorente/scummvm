@@ -203,7 +203,7 @@ bad_bitmap:
 	}
 }
 
-void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, int dh, byte *palette) {
+void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, int dh, byte *palette, byte numColors) {
 	/* don't draw bitmaps that are smaller than the fixed area */
 	if (dw < _h._fix || dh < _v._fix)
 		return;	
@@ -242,7 +242,7 @@ void NinePatchBitmap::blit(Graphics::Surface &target, int dx, int dy, int dw, in
 			for (uint j = 0; j < srf.h; ++j) {
 				uint32 color = *(uint32*)srf.getBasePtr(i, j);
 				if (color > 0) {
-					*((byte *)target.getBasePtr(i, j)) = grayscale(color) <= 126 ? black : white;
+					*((byte *)target.getBasePtr(i, j)) = closestGrayscale(color, palette, numColors);
 				}
 			}
 		}
@@ -287,7 +287,33 @@ byte NinePatchBitmap::getColorIndex(uint32 target, byte* palette) {
 uint32 NinePatchBitmap::grayscale(uint32 color) {
 	byte r, g, b;
 	_bmp->format.colorToRGB(color, r, g, b);
-	return (r + g + b) / 3;
+	return grayscale(r, g, b);
+}
+
+uint32 NinePatchBitmap::grayscale(byte r, byte g, byte b) {
+	return (0.29 * r + 0.58 * g + 0.11 * b) / 3;
+}
+
+static inline uint32 dist(uint32 a, uint32 b) {
+	if (a > b)
+		return (a - b);
+
+	return b - a;
+}
+
+byte NinePatchBitmap::closestGrayscale(uint32 color, byte* palette, byte paletteLength) {
+	byte target = grayscale(color);
+	byte bestNdx = 0;
+	byte bestColor = grayscale(palette[0], palette[1], palette[2]);
+	for (byte i = 1; i < paletteLength; ++i) {
+		byte current = grayscale(palette[i * 3], palette[(i * 3) + 1], palette[(i * 3) + 2]);
+		if (dist(target, bestColor) >= dist(target, current)) {
+			bestColor = current;
+			bestNdx = i;
+		}
+	}
+
+	return bestNdx;
 }
 
 } // end of namespace Graphics

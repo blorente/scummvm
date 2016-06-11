@@ -48,7 +48,7 @@ void MacWindowBorder::blitBorderInto(ManagedSurface &destination, bool active) {
 	byte palette[kColorCount];
 	g_system->getPaletteManager()->grabPalette(palette, 0, kColorCount);
 
-	src->blit(srf, 0, 0, srf.w, srf.h, palette);
+	src->blit(srf, 0, 0, srf.w, srf.h, palette, kColorCount);
 	destination.transBlitFrom(srf, destination.format.ARGBToColor(0, 255, 255, 255));
 }
 
