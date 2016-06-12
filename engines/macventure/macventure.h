@@ -58,8 +58,12 @@ public:
 
 	virtual Common::Error run();
 
-	void requestQuit();
+	void requestQuit();	
+	void requestUnpause();
+
+	// Data retrieval
 	bool isPaused();
+	Common::String getCommandsPausedString();
 
 private:
 	void processEvents();

@@ -94,8 +94,18 @@ void MacVentureEngine::requestQuit() {
 	_shouldQuit = true;
 }
 
+void MacVentureEngine::requestUnpause() {
+	_paused = false;
+}
+
+// Data retrieval
+
 bool MacVentureEngine::isPaused() {
 	return _paused;
+}
+
+Common::String MacVentureEngine::getCommandsPausedString() {
+	return Common::String("Click to continue");
 }
 
 void MacVentureEngine::processEvents() {

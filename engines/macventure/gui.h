@@ -111,6 +111,7 @@ struct ControlData {
 	uint32 refcon;
 	uint8 titleLength;
 	char* title;
+	uint16 border;
 };
 
 
@@ -129,6 +130,9 @@ public:
 
 	const Graphics::Font& getCurrentFont();
 
+	// Ugly switches
+	uint16 borderThickness(MVWindowType type);
+
 private: // Attributes
 
 	MacVentureEngine *_engine;
@@ -140,20 +144,29 @@ private: // Attributes
 	Common::List<WindowData> *_windowData;
 	Common::List<CommandButton> *_controlData;
 
-	Graphics::MacWindow *_outConsoleWindow;
 	Graphics::MacWindow *_controlsWindow;
+	Graphics::MacWindow *_mainGameWindow;
+	Graphics::MacWindow *_outConsoleWindow;
+	Graphics::MacWindow *_selfWindow;
+	Graphics::MacWindow *_exitsWindow;
+	Graphics::MacWindow *_diplomaWindow;
 	Graphics::Menu *_menu;
 
 private: // Methods
 
+
+	// Initializers
 	void initGUI();
 	void initWindows();
+
+	// Loaders
 	bool loadMenus();
 	bool loadWindows();
 	bool loadControls();
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
-	uint16 borderThickness(MVWindowType type);
+	// Drawers
+	void drawCommandsWindow();
 
 };
 
@@ -171,8 +184,7 @@ public:
 	}
 	~CommandButton() {}
 
-	void draw(Graphics::ManagedSurface &surface) const {
-		
+	void draw(Graphics::ManagedSurface &surface) const {		
 		
 		surface.fillRect(_data.bounds, kColorWhite);
 		surface.frameRect(_data.bounds, kColorBlack);
