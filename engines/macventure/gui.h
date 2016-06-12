@@ -61,7 +61,8 @@ enum WindowReference {
 	kOutConsoleWindow = 0x82,
 	kSelfWindow = 0x83,
 	kExitsWindow = 0x84,
-	kDiplomaWindow = 0x85
+	kDiplomaWindow = 0x85,
+	kInventoryWindow = 0x90 // Not in the files, but here for convenience
 };
 
 enum MVWindowType {
@@ -150,6 +151,7 @@ private: // Attributes
 	Graphics::MacWindow *_selfWindow;
 	Graphics::MacWindow *_exitsWindow;
 	Graphics::MacWindow *_diplomaWindow;
+	Graphics::MacWindow *_inventoryWindow;
 	Graphics::Menu *_menu;
 
 private: // Methods
@@ -162,6 +164,7 @@ private: // Methods
 	// Loaders
 	bool loadMenus();
 	bool loadWindows();
+	void loadInventoryWindow();
 	bool loadControls();
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
