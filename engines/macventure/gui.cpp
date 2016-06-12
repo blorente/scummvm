@@ -269,12 +269,17 @@ bool Gui::loadWindows() {
 		res = _resourceManager->getResource(MKTAG('W', 'I', 'N', 'D'), *iter);
 		WindowData data;
 		uint16 top, left, bottom, right;
+		uint16 borderSize;
 		top = res->readUint16BE();
 		left = res->readUint16BE();
 		bottom = res->readUint16BE();
-		right = res->readUint16BE();
-		data.bounds = Common::Rect(left, top, right, bottom);
-		data.type = res->readUint16BE();
+		right = res->readUint16BE();		
+		data.type = (MVWindowType)res->readUint16BE();
+		data.bounds = Common::Rect(
+			left, 
+			top, 
+			right + borderThickness(data.type),
+			bottom + borderThickness(data.type));
 		data.visible = res->readUint16BE();
 		data.hasCloseBox = res->readUint16BE();
 		data.refcon = (WindowReference)id; id++;
@@ -407,7 +412,6 @@ bool Gui::processCommandEvents(WindowClick click, Common::Event &event) {
 		Common::Point position(
 			event.mouse.x - _controlsWindow->getDimensions().left, 
 			event.mouse.y - _controlsWindow->getDimensions().top);
-		//debug("Click at: %d, %d", p)
 		Common::List<CommandButton>::const_iterator it = _controlData->begin();
 		for (; it != _controlData->end(); ++it) {
 			const CommandButton &data = *it;			
@@ -417,6 +421,41 @@ bool Gui::processCommandEvents(WindowClick click, Common::Event &event) {
 		}
 	}
 	return false;
+}
+
+/* Ugly switches */
+
+uint16 Gui::borderThickness(MVWindowType type) {
+	switch (type) {
+	case MacVenture::kDocument:
+		break;
+	case MacVenture::kDBox:
+		break;
+	case MacVenture::kPlainDBox:
+		return 6;
+	case MacVenture::kAltBox:
+		break;
+	case MacVenture::kNoGrowDoc:
+		break;
+	case MacVenture::kMovableDBox:
+		break;
+	case MacVenture::kZoomDoc:
+		break;
+	case MacVenture::kZoomNoGrow:
+		break;
+	case MacVenture::kRDoc16:
+		break;
+	case MacVenture::kRDoc4:
+		break;
+	case MacVenture::kRDoc6:
+		break;
+	case MacVenture::kRDoc10:
+		break;
+	default:
+		break;
+	}
+
+	return 0;
 }
 
 } // End of namespace MacVenture

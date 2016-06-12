@@ -64,9 +64,24 @@ enum WindowReference {
 	kDiplomaWindow = 0x85
 };
 
+enum MVWindowType {
+	kDocument = 0x00,
+	kDBox = 0x01,
+	kPlainDBox = 0x02,
+	kAltBox = 0x03,
+	kNoGrowDoc = 0x04,
+	kMovableDBox = 0x05,
+	kZoomDoc = 0x08,
+	kZoomNoGrow = 0x0c,
+	kRDoc16 = 0x10,
+	kRDoc4 = 0x12,
+	kRDoc6 = 0x14,
+	kRDoc10 = 0x16
+};
+
 struct WindowData {
 	Common::Rect bounds;
-	uint16 type;
+	MVWindowType type;
 	uint16 visible;
 	uint16 hasCloseBox;
 	WindowReference refcon;
@@ -138,6 +153,8 @@ private: // Methods
 	bool loadControls();
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
+	uint16 borderThickness(MVWindowType type);
+
 };
 
 class CommandButton {
@@ -169,8 +186,7 @@ public:
 			_data.bounds.top,
 			_data.bounds.right - _data.bounds.left, 
 			kColorBlack,
-			Graphics::kTextAlignCenter);
-				
+			Graphics::kTextAlignCenter);				
 	}
 
 	bool isInsideBounds(const Common::Point point) const {
