@@ -115,6 +115,15 @@ struct ControlData {
 	uint16 border;
 };
 
+struct BorderBounds {
+	uint16 leftOffset;
+	uint16 topOffset;
+	uint16 rightOffset;
+	uint16 bottomOffset;
+
+	BorderBounds(uint16 l, uint16 t, uint16 r, uint16 b) : leftOffset(l), topOffset(t), rightOffset(r), bottomOffset(b) {}
+};
+
 
 class Gui {	
 
@@ -139,7 +148,7 @@ public:
 	const Graphics::Font& getCurrentFont();
 
 	// Ugly switches
-	uint16 borderThickness(MVWindowType type);
+	BorderBounds borderBounds(MVWindowType type);
 
 private: // Attributes
 

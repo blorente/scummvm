@@ -193,9 +193,11 @@ void Gui::initWindows() {
 	_exitsWindow->setDimensions(getWindowData(kExitsWindow).bounds);
 	_exitsWindow->setActive(false);
 	_exitsWindow->setCallback(exitsWindowCallback, this);
-	loadBorder(_exitsWindow, "border_command.bmp", false);
+	loadBorder(_exitsWindow, "border_title_inac.bmp", false);
+	loadBorder(_exitsWindow, "border_title_inac.bmp", true);
 	
-	// Diploma Window
+	// Diploma Window (we can go without it for now)
+	/*
 	_diplomaWindow = _wm.addWindow(false, true, true);
 	_diplomaWindow->setDimensions(getWindowData(kDiplomaWindow).bounds);
 	_diplomaWindow->setActive(false);
@@ -203,6 +205,7 @@ void Gui::initWindows() {
 	loadBorder(_diplomaWindow, "border_command.bmp", false);
 	// Render invisible for now
 	_diplomaWindow->getSurface()->fillRect(_diplomaWindow->getSurface()->getBounds(), kColorGreen2);
+	*/
 
 	// Inventory Window
 	_inventoryWindow = _wm.addWindow(false, true, true);
@@ -316,10 +319,10 @@ bool Gui::loadWindows() {
 		right = res->readUint16BE();		
 		data.type = (MVWindowType)res->readUint16BE();
 		data.bounds = Common::Rect(
-			left - borderThickness(data.type), 
-			top - borderThickness(data.type), 
-			right + borderThickness(data.type) * 2,
-			bottom + borderThickness(data.type) * 2);
+			left - borderBounds(data.type).leftOffset, 
+			top - borderBounds(data.type).topOffset, 
+			right + borderBounds(data.type).rightOffset * 2,
+			bottom + borderBounds(data.type).bottomOffset * 2);
 		data.visible = res->readUint16BE();
 		data.hasCloseBox = res->readUint16BE();
 		data.refcon = (WindowReference)id; id++;
@@ -368,7 +371,7 @@ bool Gui::loadControls() {
 	if ((resArray = _resourceManager->getResIDArray(MKTAG('C', 'N', 'T', 'L'))).size() == 0)
 		return false;
 
-	uint16 commandsBorder = borderThickness(kPlainDBox);
+	uint16 commandsBorder = borderBounds(kPlainDBox).topOffset;
 	uint32 id = kControlExitBox;
 	for (iter = resArray.begin(); iter != resArray.end(); ++iter) {
 		res = _resourceManager->getResource(MKTAG('C', 'N', 'T', 'L'), *iter);
@@ -408,7 +411,7 @@ void Gui::drawCommandsWindow() {
 	if (_engine->isPaused()) {
 		Graphics::ManagedSurface *srf = _controlsWindow->getSurface();
 		WindowData data = getWindowData(kCommandsWindow);
-		uint16 border = borderThickness(data.type);
+		uint16 border = borderBounds(data.type).topOffset;
 		srf->fillRect(Common::Rect(border * 2, border * 2, srf->w - (border * 3), srf->h - (border * 3)), kColorWhite);
 		getCurrentFont().drawString(
 			srf,
@@ -578,28 +581,28 @@ bool MacVenture::Gui::processDiplomaEvents(WindowClick click, Common::Event & ev
 
 /* Ugly switches */
 
-uint16 Gui::borderThickness(MVWindowType type) {
+BorderBounds Gui::borderBounds(MVWindowType type) {
 	switch (type) {
 	case MacVenture::kDocument:
 		break;
 	case MacVenture::kDBox:
 		break;
 	case MacVenture::kPlainDBox:
-		return 6;
+		return BorderBounds(6, 6, 6, 6);
 	case MacVenture::kAltBox:
 		break;
 	case MacVenture::kNoGrowDoc:
-		break;
+		return BorderBounds(1, 17, 1, 1);
 	case MacVenture::kMovableDBox:
 		break;
 	case MacVenture::kZoomDoc:
-		break;
+		return BorderBounds(1, 19, 16, 1);
 	case MacVenture::kZoomNoGrow:
 		break;
 	case MacVenture::kRDoc16:
 		break;
 	case MacVenture::kRDoc4:
-		break;
+		return BorderBounds(1, 19, 1, 1);
 	case MacVenture::kRDoc6:
 		break;
 	case MacVenture::kRDoc10:
@@ -608,7 +611,7 @@ uint16 Gui::borderThickness(MVWindowType type) {
 		break;
 	}
 
-	return 0;
+	return BorderBounds(0, 0, 0, 0);
 }
 
 } // End of namespace MacVenture
