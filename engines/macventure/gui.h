@@ -185,7 +185,10 @@ private: // Methods
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
 	// Drawers
+	void drawWindows();
 	void drawCommandsWindow();
+	void drawMainGameWindow();
+	void drawSelfWindow();
 
 };
 
