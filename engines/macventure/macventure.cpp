@@ -89,9 +89,9 @@ Common::Error MacVentureEngine::run() {
 
 	_paused = true;
 	_shouldQuit = false;
-	while (!_shouldQuit) {
+	while (!(_gameState == kGameStateQuitting)) {
 		processEvents();
-
+		
 		_gui->draw();
 
 		g_system->updateScreen();
@@ -105,10 +105,12 @@ Common::Error MacVentureEngine::run() {
 
 void MacVentureEngine::requestQuit() {
 	_shouldQuit = true;
+	_gameState = kGameStateQuitting;
 }
 
 void MacVentureEngine::requestUnpause() {
 	_paused = false;
+	_gameState = kGameStatePlaying;	
 }
 
 const GlobalSettings& MacVentureEngine::getGlobalSettings() const {
@@ -133,8 +135,8 @@ void MacVentureEngine::processEvents() {
 			continue;
 
 		switch (event.type) {
-		case Common::EVENT_QUIT:
-			_shouldQuit = true;
+		case Common::EVENT_QUIT:			
+			_gameState = kGameStateQuitting;
 			break;
 		default:
 			break;
@@ -225,10 +227,12 @@ bool MacVentureEngine::loadTextHuffman() {
 			values[i] = res->readByte();
 
 		_textHuffman = new Common::Huffman(0, numEntries, masks, lengths, values);
-
+		debug(5, "Text is huffman-encoded");
 		return true;
 	} 
 	return false;	
 }
+
+
 
 } // End of namespace MacVenture
