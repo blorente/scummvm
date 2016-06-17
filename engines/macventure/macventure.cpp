@@ -42,6 +42,7 @@ MacVentureEngine::MacVentureEngine(OSystem *syst, const ADGameDescription *gameD
 	_rnd = new Common::RandomSource("macventure");
 
 	_debugger= NULL;
+	_gui = NULL;
 
 	debug("MacVenture::MacVentureEngine()");
 }
@@ -145,7 +146,7 @@ void MacVentureEngine::requestUnpause() {
 
 void MacVentureEngine::selectControl(ControlReference id) {
 	ControlAction action = referenceToAction(id);
-	debug(7, "Select control %x", action);
+	debug(4, "Select control %x", action);
 	_selectedControl = action;
 }
 
@@ -156,7 +157,7 @@ void MacVentureEngine::activateCommand(ControlReference id) {
 			_activeControl = kNoCommand;
 		_activeControl = action;
 	}
-	debug(7, "Activating Command %x... Command %x is active", action, _activeControl);
+	debug(4, "Activating Command %x... Command %x is active", action, _activeControl);
 }
 
 void MacVentureEngine::refreshReady() {
@@ -215,7 +216,7 @@ void MacVentureEngine::processEvents() {
 }
 
 bool MacVenture::MacVentureEngine::runScriptEngine() {
-	debug(5, "MAIN: Running script engine");
+	debug(4, "MAIN: Running script engine");
 	if (_haltedAtEnd) {
 		_haltedAtEnd = false;
 		if (_scriptEngine->resume()) {
@@ -337,6 +338,14 @@ Common::String MacVentureEngine::getFilePath(FilePathID id) const {
 	}
 }
 
+bool MacVentureEngine::isOldText() const {
+	return _oldTextEncoding;
+}
+
+const HuffmanLists * MacVentureEngine::getDecodingHuffman() const {
+	return _textHuffman;
+}
+
 // Data loading
 
 bool MacVentureEngine::loadGlobalSettings() {
@@ -402,7 +411,7 @@ bool MacVentureEngine::loadTextHuffman() {
 			// For some reason there are one lass mask than entries
 			masks[i] = res->readUint16BE();
 
-		uint8 *lengths = new uint8[numEntries];
+		uint32 *lengths = new uint32[numEntries];
 		for (uint i = 0; i < numEntries; i++)
 			lengths[i] = res->readByte();
 
@@ -410,8 +419,8 @@ bool MacVentureEngine::loadTextHuffman() {
 		for (uint i = 0; i < numEntries; i++)
 			values[i] = res->readByte();
 
-		_textHuffman = new Common::Huffman(0, numEntries, masks, lengths, values);
-		debug(5, "Text is huffman-encoded");
+		_textHuffman = new HuffmanLists(numEntries, lengths, masks, values);
+		debug(4, "Text is huffman-encoded");
 		return true;
 	} 
 	return false;	
