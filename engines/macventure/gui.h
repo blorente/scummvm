@@ -34,6 +34,7 @@ namespace MacVenture {
 using namespace Graphics::MacGUIConstants;
 using namespace Graphics::MacWindowConstants;
 class MacVentureEngine;
+typedef uint32 ObjID;
 
 class CommandButton;
 
@@ -61,8 +62,7 @@ enum WindowReference {
 	kOutConsoleWindow = 0x82,
 	kSelfWindow = 0x83,
 	kExitsWindow = 0x84,
-	kDiplomaWindow = 0x85,
-	kInventoryWindow = 0x90 // Not in the files, but here for convenience
+	kDiplomaWindow = 0x85
 };
 
 enum MVWindowType {
@@ -87,7 +87,9 @@ struct WindowData {
 	uint16 hasCloseBox;
 	WindowReference refcon;
 	uint8 titleLength;
-	char* title;
+	Common::String title;
+	Common::Array<ObjID> children;
+	bool updateScroll;
 };
 
 enum ControlReference {
@@ -134,6 +136,9 @@ public:
 	void draw();
 	bool processEvent(Common::Event &event);
 	void handleMenuAction(MenuAction action);
+	void updateWindow(WindowReference winID, bool containerOpen);
+
+	WindowReference createInventoryWindow();
 
 	// Event processors
 	bool processCommandEvents(WindowClick click, Common::Event &event);
@@ -146,6 +151,10 @@ public:
 	const WindowData& getWindowData(WindowReference reference);
 
 	const Graphics::Font& getCurrentFont();
+
+	// Modifiers
+	void bringToFront(WindowReference window);
+	void setWindowTitle(WindowReference winID, Common::String string);
 
 	// Ugly switches
 	BorderBounds borderBounds(MVWindowType type);
@@ -167,7 +176,7 @@ private: // Attributes
 	Graphics::MacWindow *_selfWindow;
 	Graphics::MacWindow *_exitsWindow;
 	Graphics::MacWindow *_diplomaWindow;
-	Graphics::MacWindow *_inventoryWindow;
+	Common::Array<Graphics::MacWindow*> _inventoryWindows;
 	Graphics::Menu *_menu;
 
 private: // Methods
@@ -180,7 +189,6 @@ private: // Methods
 	// Loaders
 	bool loadMenus();
 	bool loadWindows();
-	void loadInventoryWindow();
 	bool loadControls();
 	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
 
@@ -189,6 +197,9 @@ private: // Methods
 	void drawCommandsWindow();
 	void drawMainGameWindow();
 	void drawSelfWindow();
+
+	// Finders
+	WindowData& findWindowData(WindowReference reference);
 
 };
 
