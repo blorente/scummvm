@@ -108,10 +108,16 @@ void Gui::draw() {
 	drawWindows();
 
 	_wm.draw();
+
+	drawTitle();
 }
 
 void Gui::drawMenu() {
 	_menu->draw(&_screen);
+}
+
+void Gui::drawTitle() {
+	warning("drawTitle hasn't been tested yet");
 }
 
 bool Gui::processEvent(Common::Event &event) {
@@ -499,7 +505,12 @@ void Gui::drawMainGameWindow() {
 				5,
 				5),
 			kColorBlack);
-	}		
+	}	
+
+	// Tests
+	ImageAsset testBg(3, _graphics);
+	testBg.blitInto(srf, border.leftOffset * 2, border.topOffset * 2, kBlitDirect);
+
 	ImageAsset testImg(428, _graphics);
 	testImg.blitInto(srf, border.leftOffset * 2 + 10,border.topOffset * 2 + 10, kBlitBIC);
 }
