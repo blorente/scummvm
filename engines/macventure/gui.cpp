@@ -193,6 +193,8 @@ void Gui::initGUI() {
 	_menu->setCommandsCallback(menuCommandsCallback, this);
 	_menu->calcDimensions();
 
+	loadGraphics();
+
 	if (!loadWindows())
 		error("Could not load windows");
 	
@@ -278,6 +280,10 @@ void Gui::loadBorder(Graphics::MacWindow *target, Common::String filename, bool 
 
 		delete stream;
 	}
+}
+
+void Gui::loadGraphics() {
+	_graphics = new Container("Shadowgate II/Shadow Graphic");
 }
 
 bool Gui::loadMenus() {
@@ -493,7 +499,9 @@ void Gui::drawMainGameWindow() {
 				5,
 				5),
 			kColorBlack);
-	}
+	}		
+	ImageAsset testImg(428, _graphics);
+	testImg.blitInto(srf, border.leftOffset * 2 + 10,border.topOffset * 2 + 10, kBlitBIC);
 }
 
 void Gui::drawSelfWindow() {
