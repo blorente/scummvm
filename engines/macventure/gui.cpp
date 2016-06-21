@@ -115,7 +115,11 @@ void Gui::drawMenu() {
 }
 
 bool Gui::processEvent(Common::Event &event) {
-	return _wm.processEvent(event);
+	bool processed = false;
+	if (event.type == Common::EVENT_LBUTTONDOWN) {
+		debug("Click on the ui");
+	}
+	return (processed || _wm.processEvent(event));
 }
 
 const WindowData& Gui::getWindowData(WindowReference reference) {	
@@ -157,6 +161,27 @@ void Gui::setWindowTitle(WindowReference winID, Common::String string) {
 	findWindowData(winID).titleLength = string.size();
 }
 
+void Gui::updateWindowInfo(WindowReference ref, ObjID objID, const Common::Array<ObjID> &children) {
+	WindowData &data = findWindowData(ref);
+	data.children.clear();
+	uint32 originx = 0x7fff;
+	uint32 originy = 0x7fff;
+	for (uint i = 0; i < children.size(); i++) {
+		if (children[i] != 1) {
+			ObjID child = children[i];
+			if (ref != kMainGameWindow) {
+				Common::Point childPos = _engine->getObjPosition(child);
+				originx = originx > childPos.x ? childPos.x : originx;
+				originy = originy > childPos.y ? childPos.y : originy;
+			}
+			data.children.push_back(child);
+		}
+	}
+	if (originx != 0x7fff) data.bounds.left = originx;
+	if (originy != 0x7fff) data.bounds.top = originy;
+	if (ref != kMainGameWindow) data.updateScroll = true;
+}
+
 void Gui::initGUI() {
 	_screen.create(kScreenWidth, kScreenHeight, Graphics::PixelFormat::createFormatCLUT8());
 	_wm.setScreen(&_screen);
@@ -175,6 +200,7 @@ void Gui::initGUI() {
 
 	if (!loadControls())
 		error("Could not load controls");
+	
 
 	draw();
 	
@@ -351,7 +377,7 @@ bool Gui::loadWindows() {
 			data.title = Common::String(newTitle);
 		}
 
-		debug(5, "Window loaded: %s", data.title);
+		debug(4, "Window loaded: %s", data.title);
 
 		_windowData->push_back(data);
 	}
@@ -456,10 +482,30 @@ void Gui::drawMainGameWindow() {
 		srf->w,
 		kColorBlack,
 		Graphics::kTextAlignCenter);
+
+	WindowData &data = findWindowData(kMainGameWindow);
+	for (Common::Array<ObjID>::const_iterator it = data.children.begin(); it != data.children.end(); it++) {
+		Common::Point pos = _engine->getObjPosition(*it);
+		srf->fillRect(
+			Common::Rect(
+				border.leftOffset * 2 + pos.x,
+				border.topOffset * 2 + pos.y,
+				5,
+				5),
+			kColorBlack);
+	}
 }
 
 void Gui::drawSelfWindow() {
-	warning("drawSelfWindow: Unimplemented");
+	Graphics::ManagedSurface *srf = _selfWindow->getSurface();
+	BorderBounds border = borderBounds(getWindowData(kSelfWindow).type);
+	srf->fillRect(
+		Common::Rect(
+			border.leftOffset * 2,
+			border.topOffset * 2,
+			srf->w - (border.rightOffset * 3),
+			srf->h - (border.bottomOffset * 3)),
+		kColorWhite);
 }
 
 WindowData & Gui::findWindowData(WindowReference reference) {
@@ -480,8 +526,7 @@ WindowData & Gui::findWindowData(WindowReference reference) {
 /* CALLBACKS */
 
 bool commandsWindowCallback(Graphics::WindowClick click, Common::Event &event, void *gui) {
-	Gui *g = (Gui*)gui;
-	
+	Gui *g = (Gui*)gui;	
 
 	return g->processCommandEvents(click, event);
 }
@@ -582,9 +627,9 @@ void Gui::updateWindow(WindowReference winID, bool containerOpen) {
 	if (winID > 0x90) return;
 	if (winID == kSelfWindow || containerOpen) {
 		if (winID == kMainGameWindow) {
-			warning("Unimplemented: draw main game window");
+			drawMainGameWindow();
 		} else {
-			warning("Unimplemented: fill window with background");
+			warning("Unimplemented: fill window with background");			
 		}
 		WindowData &data = findWindowData(winID);
 		Common::Array<ObjID> children = data.children;
@@ -623,7 +668,20 @@ WindowReference Gui::createInventoryWindow() {
 	loadBorder(newWindow, "border_self_inac.bmp", false);
 	loadBorder(newWindow, "border_self_act.bmp", true);
 	_inventoryWindows.push_back(newWindow);
+
+	debug(3, "Create new inventory window. Reference: %d", newData.refcon);
 	return newData.refcon;
+}
+
+bool Gui::tryCloseWindow(WindowReference winID) {
+	WindowData data = findWindowData(winID);
+	Graphics::MacWindow *wind;
+	if (winID < 0x80) { // Inventory window
+		warning("Window closing not implemented");
+	} else {
+		warning("Window closing not implemented");
+	}
+	return true;
 }
 
 
@@ -640,7 +698,7 @@ bool Gui::processCommandEvents(WindowClick click, Common::Event &event) {
 		Common::List<CommandButton>::const_iterator it = _controlData->begin();
 		for (; it != _controlData->end(); ++it) {
 			if (it->isInsideBounds(position)) {
-				debug("Command active: %s", it->getData().title);
+				debug(4, "Command active: %s", it->getData().title);
 				data = *it;
 			}
 		}
@@ -654,26 +712,21 @@ bool Gui::processCommandEvents(WindowClick click, Common::Event &event) {
 }
 
 bool MacVenture::Gui::processMainGameEvents(WindowClick click, Common::Event & event) {
-	debug(6, "Processing event in Main Game Window");
 	return getWindowData(kMainGameWindow).visible;
 }
 bool MacVenture::Gui::processOutConsoleEvents(WindowClick click, Common::Event & event) {
-	debug(6, "Processing event in Out Console Window");
 	return getWindowData(kOutConsoleWindow).visible;
 }
 
 bool MacVenture::Gui::processSelfEvents(WindowClick click, Common::Event & event) {
-	debug(6, "Processing event in Self Window");
 	return getWindowData(kSelfWindow).visible;
 }
 
 bool MacVenture::Gui::processExitsEvents(WindowClick click, Common::Event & event) {
-	debug(6, "Processing event in Exits Window");
 	return getWindowData(kExitsWindow).visible;
 }
 
 bool MacVenture::Gui::processDiplomaEvents(WindowClick click, Common::Event & event) {
-	debug(6, "Processing event in Diploma Window");
 	return getWindowData(kDiplomaWindow).visible;
 }
 

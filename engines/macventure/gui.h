@@ -29,6 +29,8 @@
 
 #include "graphics/font.h"
 
+#include "macventure/image.h"
+
 namespace MacVenture {
 
 using namespace Graphics::MacGUIConstants;
@@ -140,6 +142,7 @@ public:
 	void updateWindow(WindowReference winID, bool containerOpen);
 
 	WindowReference createInventoryWindow();
+	bool tryCloseWindow(WindowReference winID);
 
 	// Event processors
 	bool processCommandEvents(WindowClick click, Common::Event &event);
@@ -157,7 +160,8 @@ public:
 	// Modifiers
 	void bringToFront(WindowReference window);
 	void setWindowTitle(WindowReference winID, Common::String string);
-
+	void updateWindowInfo(WindowReference ref, ObjID objID, const Common::Array<ObjID> &children);
+	
 	// Ugly switches
 	BorderBounds borderBounds(MVWindowType type);
 
