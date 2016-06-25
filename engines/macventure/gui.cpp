@@ -38,8 +38,8 @@ enum WindowReference;
 const bool kLoadStaticMenus = true;
 
 enum {
-	kCursorWidth = 4, // HACK Arbitrary width to test
-	kCursorHeight = 4
+	kCursorWidth = 10, // HACK Arbitrary width to test
+	kCursorHeight = 10
 };
 
 enum {
