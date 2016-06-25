@@ -185,6 +185,7 @@ void Gui::setWindowTitle(WindowReference winID, Common::String string) {
 void Gui::updateWindowInfo(WindowReference ref, ObjID objID, const Common::Array<ObjID> &children) {
 	WindowData &data = findWindowData(ref);
 	data.children.clear();
+	data.objRef = objID;
 	uint32 originx = 0x7fff;
 	uint32 originy = 0x7fff;
 	for (uint i = 0; i < children.size(); i++) {
@@ -211,9 +212,9 @@ void Gui::removeChild(WindowReference target, ObjID child) {
 	WindowData data = findWindowData(target);
 	uint index = 0;
 	for (;index < data.children.size(); index++) {
-		if (data.children[index].obj == child) break;
+		if (data.children[index].obj == child) break;		
 	}
-
+	
 	data.children.remove_at(index);
 }
 
@@ -235,6 +236,8 @@ void Gui::initGUI() {
 	
 	initWindows();
 
+	assignObjReferences();
+
 	if (!loadControls())
 		error("Could not load controls");	
 
@@ -249,51 +252,55 @@ void Gui::initWindows() {
 	_controlsWindow->setDimensions(getWindowData(kCommandsWindow).bounds);
 	_controlsWindow->setActive(false);
 	_controlsWindow->setCallback(commandsWindowCallback, this);
-	loadBorder(_controlsWindow, "border_command.bmp", false);
-	loadBorder(_controlsWindow, "border_command.bmp", true);
+	//loadBorder(_controlsWindow, "border_command.bmp", false);
+	//loadBorder(_controlsWindow, "border_command.bmp", true);
 
 	// Main Game Window
 	_mainGameWindow = _wm.addWindow(false, false, false);
 	_mainGameWindow->setDimensions(getWindowData(kMainGameWindow).bounds);
 	_mainGameWindow->setActive(false);
 	_mainGameWindow->setCallback(mainGameWindowCallback, this);
-	loadBorder(_mainGameWindow, "border_no_scroll_inac.bmp", false);
-	loadBorder(_mainGameWindow, "border_no_scroll_act.bmp", true);
-	findWindowData(kMainGameWindow).objRef = 3;
-
+	//loadBorder(_mainGameWindow, "border_no_scroll_inac.bmp", false);
+	//loadBorder(_mainGameWindow, "border_no_scroll_act.bmp", true);
+	
 	// In-game Output Console
 	_outConsoleWindow = _wm.addWindow(false, true, true);
 	_outConsoleWindow->setDimensions(getWindowData(kOutConsoleWindow).bounds);
 	_outConsoleWindow->setActive(false);
 	_outConsoleWindow->setCallback(outConsoleWindowCallback, this);	
-	loadBorder(_outConsoleWindow, "border_left_scroll_inac.bmp", false);
-	loadBorder(_outConsoleWindow, "border_left_scroll_inac.bmp", true);
+	//loadBorder(_outConsoleWindow, "border_left_scroll_inac.bmp", false);
+	//loadBorder(_outConsoleWindow, "border_left_scroll_inac.bmp", true);
 
 	// Self Window
 	_selfWindow = _wm.addWindow(false, true, true);
 	_selfWindow->setDimensions(getWindowData(kSelfWindow).bounds);
 	_selfWindow->setActive(false);
 	_selfWindow->setCallback(selfWindowCallback, this);
-	loadBorder(_selfWindow, "border_no_scroll_inac.bmp", false);
-	loadBorder(_selfWindow, "border_no_scroll_inac.bmp", true);
-	findWindowData(kMainGameWindow).objRef = 0;
+	//loadBorder(_selfWindow, "border_no_scroll_inac.bmp", false);
+	//loadBorder(_selfWindow, "border_no_scroll_inac.bmp", true);
 	
 	// Exits Window
 	_exitsWindow = _wm.addWindow(false, true, true);
 	_exitsWindow->setDimensions(getWindowData(kExitsWindow).bounds);
 	_exitsWindow->setActive(false);
 	_exitsWindow->setCallback(exitsWindowCallback, this);
-	loadBorder(_exitsWindow, "border_no_scroll_inac.bmp", false);
-	loadBorder(_exitsWindow, "border_no_scroll_act.bmp", true);
+	//loadBorder(_exitsWindow, "border_no_scroll_inac.bmp", false);
+	//loadBorder(_exitsWindow, "border_no_scroll_act.bmp", true);
 
 	
+}
+
+void Gui::assignObjReferences() {
+
+	findWindowData(kSelfWindow).objRef = 0;
+
 }
 
 WindowReference Gui::createInventoryWindow(ObjID objRef) {
 	Graphics::MacWindow *newWindow = _wm.addWindow(true, true, true);
 	WindowData newData;
 	GlobalSettings settings = _engine->getGlobalSettings();
-	newData.refcon = (WindowReference)ABS(_inventoryWindows.size()); // This is a hack
+	newData.refcon = (WindowReference)ABS(_inventoryWindows.size()); // This is a HACK
 
 	if (_windowData->back().refcon < 0x80) { // There is already another inventory window
 		newData.bounds = _windowData->back().bounds; // Inventory windows are always last
@@ -314,8 +321,8 @@ WindowReference Gui::createInventoryWindow(ObjID objRef) {
 
 	newWindow->setDimensions(newData.bounds);
 	newWindow->setCallback(inventoryWindowCallback, this);
-	loadBorder(newWindow, "border_no_scroll_inac.bmp", false);
-	loadBorder(newWindow, "border_no_scroll_act.bmp", true);
+	//loadBorder(newWindow, "border_no_scroll_inac.bmp", false);
+	//loadBorder(newWindow, "border_no_scroll_act.bmp", true);
 	_inventoryWindows.push_back(newWindow);
 
 	debug("Create new inventory window. Reference: %d", newData.refcon);
@@ -587,7 +594,7 @@ void Gui::drawExitsWindow() {
 		srf->w + border.rightOffset,
 		srf->h + border.bottomOffset), kColorWhite);
 
-	drawObjectsInWindow(kExitsWindow, _exitsWindow->getSurface());
+	drawObjectsInWindow(kMainGameWindow, _exitsWindow->getSurface());
 }
 
 void Gui::drawObjectsInWindow(WindowReference target, Graphics::ManagedSurface * surface) {
@@ -791,12 +798,6 @@ void Gui::updateWindow(WindowReference winID, bool containerOpen) {
 			for (; it != _controlData->end(); ++it) {
 				it->unselect();
 			}
-		}
-		if (winID == kMainGameWindow) {
-			drawMainGameWindow();
-		} else {
-			Graphics::MacWindow *winRef = findWindow(winID);
-			winRef->getSurface()->fillRect(data.bounds, kColorGray);					
 		}		
 		Common::Array<DrawableObject> &children = data.children;
 		for (uint i = 0; i < children.size(); i++) {
@@ -812,7 +813,16 @@ void Gui::updateWindow(WindowReference winID, bool containerOpen) {
 					mode = kBlitOR;
 				} 
 				children[i] = DrawableObject(child, mode);
+			} else {
+				children[i] = DrawableObject(child, kBlitXOR);
 			}
+		}
+		if (winID == kMainGameWindow) {
+			drawMainGameWindow();
+		}
+		else {
+			Graphics::MacWindow *winRef = findWindow(winID);
+			winRef->getSurface()->fillRect(data.bounds, kColorGray);
 		}
 		if (data.type == kZoomDoc && data.updateScroll) {
 			warning("Unimplemented: update scroll");

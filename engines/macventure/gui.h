@@ -220,6 +220,7 @@ private: // Methods
 	// Initializers
 	void initGUI();
 	void initWindows();
+	void assignObjReferences(); // Mainly guesswork
 
 	// Loaders
 	bool loadMenus();
