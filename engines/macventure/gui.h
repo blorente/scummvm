@@ -143,6 +143,11 @@ struct BorderBounds {
 	BorderBounds(uint16 l, uint16 t, uint16 r, uint16 b) : leftOffset(l), topOffset(t), rightOffset(r), bottomOffset(b) {}
 };
 
+struct DraggedObj {
+	ObjID id;
+	Common::Point pos;
+};
+
 
 class Gui {	
 
@@ -215,6 +220,9 @@ private: // Attributes
 	Container *_graphics;
 	Common::HashMap<ObjID, ImageAsset*> _assets;
 
+	Graphics::ManagedSurface _draggedSurface;
+	DraggedObj _draggedObj;
+
 private: // Methods
 	
 	// Initializers
@@ -237,6 +245,7 @@ private: // Methods
 	void drawInventories();
 	void drawExitsWindow();
 
+	void drawDraggedObject();
 	void drawObjectsInWindow(WindowReference target, Graphics::ManagedSurface *surface);
 	void drawWindowTitle(WindowReference target, Graphics::ManagedSurface *surface);
 
@@ -246,6 +255,8 @@ private: // Methods
 
 	// Utils
 	bool isRectInsideObject(Common::Rect target, ObjID obj);
+	void selectDraggable(ObjID child, Common::Point pos);
+	void handleDragRelease(Common::Point pos);
 
 };
 
