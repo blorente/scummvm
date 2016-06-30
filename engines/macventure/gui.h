@@ -128,7 +128,7 @@ struct ControlData {
 	uint16 scrollMax;
 	uint16 scrollMin;
 	uint16 cdef;
-	uint32 refcon;
+	uint32 refcon; // If exits window, then the obj id. Otherwise, the control type
 	uint8 titleLength;
 	char* title;
 	uint16 border;
@@ -158,7 +158,7 @@ public:
 	void draw();
 	void drawMenu();
 	void drawTitle();
-	void drawExit(ObjID id);
+
 	void clearControls();
 	bool processEvent(Common::Event &event);
 	void handleMenuAction(MenuAction action);
@@ -193,6 +193,9 @@ public:
 	
 	void addChild(WindowReference target, ObjID child);
 	void removeChild(WindowReference target, ObjID child);
+	
+	void unselectExits();
+	void updateExit(ObjID id);
 
 	// Ugly switches
 	BorderBounds borderBounds(MVWindowType type);
@@ -206,7 +209,8 @@ private: // Attributes
 	Graphics::MacWindowManager _wm;
 
 	Common::List<WindowData> *_windowData;
-	Common::List<CommandButton> *_controlData;
+	Common::Array<CommandButton> *_controlData;
+	Common::Array<CommandButton> *_exitsData;
 
 	Graphics::MacWindow *_controlsWindow;
 	Graphics::MacWindow *_mainGameWindow;
@@ -289,16 +293,18 @@ public:
 		surface.fillRect(_data.bounds, colorFill);
 		surface.frameRect(_data.bounds, kColorBlack);
 
-		const Graphics::Font &font = _gui->getCurrentFont();
-		Common::String title(_data.title);
-		font.drawString(
-			&surface,
-			title,
-			_data.bounds.left,
-			_data.bounds.top,
-			_data.bounds.right - _data.bounds.left, 
-			colorText,
-			Graphics::kTextAlignCenter);				
+		if (_data.titleLength > 0) {
+			const Graphics::Font &font = _gui->getCurrentFont();
+			Common::String title(_data.title);
+			font.drawString(
+				&surface,
+				title,
+				_data.bounds.left,
+				_data.bounds.top,
+				_data.bounds.right - _data.bounds.left,
+				colorText,
+				Graphics::kTextAlignCenter);
+		}
 	}
 
 	bool isInsideBounds(const Common::Point point) const {
