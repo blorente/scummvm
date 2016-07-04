@@ -174,13 +174,12 @@ void MacVentureEngine::requestUnpause() {
 	_gameState = kGameStatePlaying;
 }
 
-void MacVentureEngine::selectControl(ControlReference id) {
-	ControlAction action = referenceToAction(id);
-	debug(2, "Select control %x", action);
-	_selectedControl = action;
+void MacVentureEngine::selectControl(ControlAction id) {
+	debug(2, "Select control %x", id);
+	_selectedControl = id;
 }
 
-void MacVentureEngine::activateCommand(ControlReference id) {
+void MacVentureEngine::activateCommand(ControlType id) {
 	if (id == kControlClickToContinue) {
 		_clickToContinue = false;
 		_paused = true;
@@ -266,15 +265,15 @@ bool MacVentureEngine::printTexts() {
 		_textQueue.remove_at(0);
 		switch (text.id) {
 		case kTextNumber:
-			debug("Print Number: %d", text.asset);
+			_gui->printText(Common::String(text.asset));
 			gameChanged();
 			break;
 		case kTextNewLine:
-			debug("Print Newline: ");
+			_gui->printText(Common::String("\n"));
 			gameChanged();
 			break;
 		case kTextPlain:
-			debug("Print Plain Text: %s", _world->getText(text.asset, text.source, text.destination).c_str());
+			_gui->printText(_world->getText(text.asset, text.source, text.destination));
 			gameChanged();
 			break;
 		}
@@ -313,24 +312,19 @@ void MacVentureEngine::handleObjectSelect(ObjID objID, WindowReference win, bool
 			if (objID > 0) {
 				int i = findObjectInArray(objID, _currentSelection);
 
-				if (isDoubleClick) { // no double click for now
+				if (isDoubleClick) {
 					if (i >= 0)
 						unselectAll();
 					selectObject(objID);
 					if (!_cmdReady)
 					{
-						selectPrimaryObject(objID);
-						if (_selectedControl == kNoCommand)	{
-							_selectedControl = kActivateObject;							
-							if (_activeControl)
-								_activeControl = kNoCommand;
-							_activeControl = kActivateObject;							
-							_cmdReady = true;
-						}
+						selectObject(objID);
+						
+						selectControl(kActivateObject);
+						_activeControl = kActivateObject;
+						_cmdReady = true;						
 					}
 					preparedToRun();
-					//doubleClickObject(objID, win, event, canDrag);
-					debug("Double click");
 				} else {
 					if (i >= 0)
 						unselectAll();
@@ -338,7 +332,6 @@ void MacVentureEngine::handleObjectSelect(ObjID objID, WindowReference win, bool
 					if (getInvolvedObjects() == 1)
 						_cmdReady = true;
 					preparedToRun();
-					//singleClickObject(objID, win, event, canDrag);
 				}
 			}
 		}
@@ -348,7 +341,7 @@ void MacVentureEngine::handleObjectSelect(ObjID objID, WindowReference win, bool
 void MacVentureEngine::handleObjectDrop(ObjID objID, Common::Point delta, ObjID newParent) {
 	_destObject = newParent;
 	updateDelta(delta);
-	selectControl(kControlOperate);
+	selectControl(kOperate);
 	activateCommand(kControlOperate);
 	refreshReady();
 	preparedToRun();
@@ -356,7 +349,7 @@ void MacVentureEngine::handleObjectDrop(ObjID objID, Common::Point delta, ObjID 
 
 void MacVentureEngine::updateDelta(Common::Point newPos) {
 	Common::Point newDelta = newPos - _deltaPoint;
-	debug(4, "Update delta: Old(%d, %d), New(%d, %d)",
+	debug("Update delta: Old(%d, %d), New(%d, %d)",
 		_deltaPoint.x, _deltaPoint.y,
 		newDelta.x, newDelta.y);
 	_deltaPoint = newDelta;
@@ -751,7 +744,7 @@ void MacVentureEngine::zoomObject(ObjID objID) {
 	warning("zoomObject: unimplemented");
 }
 
-ControlAction MacVenture::MacVentureEngine::referenceToAction(ControlReference id) {
+ControlAction MacVenture::MacVentureEngine::referenceToAction(ControlType id) {
 	switch (id) {
 	case MacVenture::kControlExitBox:
 		return kActivateObject;//??
