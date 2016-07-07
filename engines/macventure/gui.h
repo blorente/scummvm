@@ -64,6 +64,7 @@ enum MenuAction {
 
 enum WindowReference {
 	kNoWindow = 0,
+	kInventoryStart = 1,
 	kCommandsWindow = 0x80,
 	kMainGameWindow = 0x81,
 	kOutConsoleWindow = 0x82,
@@ -170,6 +171,8 @@ struct DraggedObj {
 	ObjID id;
 	Common::Point pos;
 	Common::Point mouseOffset;
+	Common::Point startPos;
+	WindowReference startWin;
 	bool hasMoved;
 };
 
@@ -311,6 +314,7 @@ private: // Methods
 	void selectDraggable(ObjID child, WindowReference origin, Common::Point startPos);
 	void handleDragRelease(Common::Point pos, bool shiftPressed, bool isDoubleClick);
 	Common::Rect calculateClickRect(Common::Point clickPos, Common::Rect windowBounds);
+	Common::Point localize(Common::Point point, WindowReference origin, WindowReference target);
 
 };
 
@@ -351,12 +355,11 @@ public:
 	~Cursor() {}
 
 	void tick() {
-		executeState();
+		executeState(); 
 		changeState(kTickCol);
 	}
 
 	bool processEvent(const Common::Event &event) {
-		executeState();
 
 		if (event.type == Common::EVENT_MOUSEMOVE) {
 			_pos = event.mouse;
