@@ -239,7 +239,6 @@ public:
 	uint getOverlapPercent(ObjID one, ObjID other);
 
 	WindowReference getObjWindow(ObjID objID);
-	WindowReference findObjWindow(ObjID objID);	
 	WindowReference findParentWindow(ObjID objID);
 
 	Common::Point getDeltaPoint();
