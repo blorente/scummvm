@@ -685,11 +685,14 @@ void Gui::drawObjectsInWindow(WindowReference target, Graphics::ManagedSurface *
 					surface, pos.x, pos.y, kBlitOR);
 
 			// For test
+			/*
 			surface->frameRect(Common::Rect(
 				pos.x, 
 				pos.y,
-				pos.x + _assets[child]->getWidth(),
-				pos.y + _assets[child]->getHeight()), kColorGreen);
+				pos.x + _assets[child]->getWidth() + 1,
+				pos.y + _assets[child]->getHeight() + 1), kColorGreen);
+				*/
+				
 		}
 		
 	}	
@@ -737,7 +740,6 @@ void Gui::drawDraggedObject() {
 				
 	}		
 }
-
 
 void Gui::updateWindow(WindowReference winID, bool containerOpen) {
 	if (winID == kNoWindow) return;
