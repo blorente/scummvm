@@ -184,7 +184,7 @@ void MacVentureEngine::activateCommand(ControlAction id) {
 		_clickToContinue = false;
 		_paused = true;
 		return;
-	}	
+	}
 	if (id != _activeControl) {
 		if (_activeControl)
 			_activeControl = kNoCommand;
@@ -329,10 +329,10 @@ void MacVentureEngine::handleObjectSelect(ObjID objID, WindowReference win, bool
 					selectObject(objID);
 					_destObject = objID;
 					_deltaPoint = Common::Point(0, 0);
-					if (!_cmdReady) {						
+					if (!_cmdReady) {
 						selectControl(kActivateObject);
 						_activeControl = kActivateObject;
-						_cmdReady = true;						
+						_cmdReady = true;
 					}
 					preparedToRun();
 				} else {
@@ -534,7 +534,6 @@ void MacVentureEngine::selectObject(ObjID objID) {
 		_selectedObjs.push_back(objID);
 		highlightExit(objID);
 	}
-	_deltaPoint = getObjPosition(objID);
 }
 
 void MacVentureEngine::unselectObject(ObjID objID) {
@@ -550,7 +549,7 @@ void MacVentureEngine::unselectObject(ObjID objID) {
 
 void MacVentureEngine::updateExits() {
 	// exitWin.killControls();
-	_gui->unselectExits();	
+	_gui->unselectExits();
 
 	Common::Array<ObjID> exits = _world->getChildren(_world->getObjAttr(1, kAttrParentObject), true);
 	for (uint i = 0; i < exits.size(); i++)
@@ -610,7 +609,7 @@ void MacVentureEngine::selectPrimaryObject(ObjID objID) {
 	int idx;
 	if (_destObject > 0 &&
 		(idx = findObjectInArray(_destObject, _selectedObjs)) != -1 &&
-		findObjectInArray(_destObject, _currentSelection) == -1) 
+		findObjectInArray(_destObject, _currentSelection) == -1)
 	{
 		_selectedObjs.remove_at(idx);
 		highlightExit(_destObject);
@@ -752,7 +751,7 @@ void MacVentureEngine::toggleExits() {
 		_selectedObjs.remove_at(0);
 		highlightExit(obj);
 		updateWindow(findParentWindow(obj));
-	}	
+	}
 }
 
 void MacVentureEngine::zoomObject(ObjID objID) {
@@ -871,13 +870,13 @@ Common::Rect MacVentureEngine::getObjBounds(ObjID objID) {
 uint MacVentureEngine::getOverlapPercent(ObjID one, ObjID other) {
 	//not the same parent? 0 overlap
 	if (_world->getObjAttr(one, kAttrParentObject) !=
-		_world->getObjAttr(other, kAttrParentObject)) 
+		_world->getObjAttr(other, kAttrParentObject))
 		return 0;
 
 	Common::Rect oneBounds = getObjBounds(one);
 	Common::Rect otherBounds = getObjBounds(other);
 	if (otherBounds.intersects(oneBounds) ||
-		oneBounds.intersects(otherBounds)) 
+		oneBounds.intersects(otherBounds))
 	{
 		uint areaOne = oneBounds.width() * oneBounds.height();
 		uint areaOther = otherBounds.width() * otherBounds.height();
@@ -985,8 +984,8 @@ bool MacVentureEngine::loadTextHuffman() {
 		_textHuffman = new HuffmanLists(numEntries, lengths, masks, values);
 		debug(4, "Text is huffman-encoded");
 		return true;
-	} 
-	return false;	
+	}
+	return false;
 }
 
 
