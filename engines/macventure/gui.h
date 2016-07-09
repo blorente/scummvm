@@ -111,7 +111,7 @@ struct WindowData {
 	bool updateScroll;
 };
 
-enum ControlType { // HACK, should correspond exactly with the types of controls (sliders etc) 
+enum ControlType { // HACK, should correspond exactly with the types of controls (sliders etc)
 	kControlExitBox = 0,
 	kControlExamine = 1,
 	kControlOpen = 2,
@@ -151,7 +151,7 @@ struct ControlData {
 	uint16 scrollMax;
 	uint16 scrollMin;
 	uint16 cdef;
-	ControlAction refcon; 
+	ControlAction refcon;
 	ControlType type;
 	uint8 titleLength;
 	char* title;
@@ -185,7 +185,7 @@ enum CursorState {
 	kCursorDoubleClick
 };
 
-class Gui {	
+class Gui {
 
 public:
 	Gui(MacVentureEngine *engine, Common::MacResManager *resman);
@@ -235,10 +235,11 @@ public:
 	void bringToFront(WindowReference window);
 	void setWindowTitle(WindowReference winID, Common::String string);
 	void updateWindowInfo(WindowReference ref, ObjID objID, const Common::Array<ObjID> &children);
-	
+
 	void addChild(WindowReference target, ObjID child);
 	void removeChild(WindowReference target, ObjID child);
-	
+
+	void clearExits();
 	void unselectExits();
 	void updateExit(ObjID id);
 
@@ -273,13 +274,13 @@ private: // Attributes
 
 	Graphics::ManagedSurface _draggedSurface;
 	DraggedObj _draggedObj;
-	
+
 	Cursor *_cursor;
 
 	ConsoleText *_consoleText;
 
 private: // Methods
-	
+
 	// Initializers
 	void initGUI();
 	void initWindows();
@@ -289,7 +290,7 @@ private: // Methods
 	bool loadMenus();
 	bool loadWindows();
 	bool loadControls();
-	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);	
+	void loadBorder(Graphics::MacWindow * target, Common::String filename, bool active);
 	void loadGraphics();
 
 	// Drawers
@@ -358,7 +359,7 @@ public:
 	~Cursor() {}
 
 	void tick() {
-		executeState(); 
+		executeState();
 		changeState(kTickCol);
 	}
 
@@ -430,8 +431,8 @@ public:
 	}
 	~CommandButton() {}
 
-	void draw(Graphics::ManagedSurface &surface) const {		
-		
+	void draw(Graphics::ManagedSurface &surface) const {
+
 		uint colorFill = _selected ? kColorBlack : kColorWhite;
 		uint colorText = _selected ? kColorWhite : kColorBlack;
 

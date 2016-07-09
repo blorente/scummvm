@@ -719,8 +719,8 @@ void Gui::drawDraggedObject() {
 		ImageAsset *asset = _assets[_draggedObj.id];
 
 		_draggedSurface.create(asset->getWidth(), asset->getHeight(), _screen.format);
-		_screen.copyRectToSurface(_draggedSurface, _draggedObj.pos.x, _draggedObj.pos.y,
-			Common::Rect(asset->getWidth() - 1, asset->getHeight() - 1));
+		//_screen.copyRectToSurface(_draggedSurface, _draggedObj.pos.x, _draggedObj.pos.y,
+		//	Common::Rect(asset->getWidth() - 1, asset->getHeight() - 1));
 
 		asset->blitInto(&_draggedSurface, 0, 0, kBlitBIC);
 
@@ -775,6 +775,10 @@ void Gui::updateWindow(WindowReference winID, bool containerOpen) {
 	}
 }
 
+void Gui::clearExits() {
+	_exitsData->clear();
+}
+
 void Gui::unselectExits() {
 	Common::Array<CommandButton>::const_iterator it = _exitsData->begin();
 	for (; it != _exitsData->end(); ++it) {
@@ -808,8 +812,8 @@ void Gui::updateExit(ObjID obj) {
 		data.titleLength = 0;
 		data.refcon = (ControlAction)obj; // Objects can be exits (actions)
 		Common::Point pos = _engine->getObjExitPosition(obj);
-		pos.x = border.leftOffset;
-		pos.y = border.topOffset;
+		pos.x += border.leftOffset;
+		pos.y += border.topOffset;
 		data.bounds = Common::Rect(pos.x, pos.y, pos.x + kExitButtonWidth, pos.y + kExitButtonHeight);
 		data.visible = true;
 
