@@ -116,7 +116,7 @@ protected:
 
 	bool (*_callback)(WindowClick, Common::Event &, void *);
 	void *_dataPtr;
-	
+
 	MacWindowManager *_wm;
 };
 
@@ -130,8 +130,10 @@ public:
 	const Common::Rect &getInnerDimensions() { return _innerDims; }
 
 	bool draw(ManagedSurface *g, bool forceRedraw = false);
-	
+
 	void setActive(bool active);
+	bool isActive();
+	
 	void setTitle(Common::String &title) { _title = title; }
 	void setHighlight(WindowClick highlightedPart);
 	void setScroll(float scrollPos, float scrollSize);
@@ -149,7 +151,7 @@ private:
 	void fillRect(ManagedSurface *g, int x, int y, int w, int h, int color);
 	const Font *getTitleFont();
 	void updateInnerDims();
-	WindowClick isInBorder(int x, int y);	
+	WindowClick isInBorder(int x, int y);
 
 private:
 	ManagedSurface _borderSurface;

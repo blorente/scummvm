@@ -832,7 +832,8 @@ WindowReference Gui::findWindowAtPoint(Common::Point point) {
 	Common::List<WindowData>::iterator it;
 	for (it = _windowData->begin(); it != _windowData->end(); it++) {
 		if (it->bounds.contains(point) && it->refcon != kDiplomaWindow) { //HACK, diploma should be cosnidered
-			return it->refcon;
+			if (findWindow(it->refcon)->isActive())
+				return it->refcon;
 		}
 	}
 	return kNoWindow;
@@ -959,6 +960,7 @@ void Gui::selectDraggable(ObjID child, WindowReference origin, Common::Point sta
 
 void Gui::handleDragRelease(Common::Point pos, bool shiftPressed, bool isDoubleClick) {
 	WindowReference destinationWindow = findWindowAtPoint(pos);
+	if (destinationWindow == kNoWindow) return;
 	if (_draggedObj.id != 0) {
 		if (_draggedObj.hasMoved) {
 			ObjID destObject = getWindowData(destinationWindow).objRef;
@@ -1262,6 +1264,7 @@ bool Gui::processInventoryEvents(WindowClick click, Common::Event & event) {
 
 		// Find the appropriate window
 		WindowReference ref = findWindowAtPoint(event.mouse);
+		if (ref == kNoWindow) return false;
 		Graphics::MacWindow *win = findWindow(ref);
 		WindowData &data = findWindowData((WindowReference) ref);
 		ObjID child;

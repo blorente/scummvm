@@ -56,7 +56,7 @@
 #include "graphics/fontman.h"
 #include "graphics/macgui/macwindow.h"
 
-namespace Graphics {	
+namespace Graphics {
 
 namespace MacGUIConstants {
 	enum {

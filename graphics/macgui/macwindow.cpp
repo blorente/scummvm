@@ -96,6 +96,8 @@ void MacWindow::setActive(bool active) {
 	_borderIsDirty = true;
 }
 
+bool MacWindow::isActive() { return _active; }
+
 void MacWindow::resize(int w, int h) {
 	if (_surface.w == w && _surface.h == h)
 		return;
@@ -142,13 +144,13 @@ bool MacWindow::draw(ManagedSurface *g, bool forceRedraw) {
 		drawBorder();
 
 	_contentIsDirty = false;
-	
+
 	// Compose
 	_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w - 2, _surface.h - 2), Common::Point(2, 2));
 	_composeSurface.transBlitFrom(_borderSurface, kColorGreen);
 
-	g->transBlitFrom(_composeSurface, _composeSurface.getBounds(), Common::Point(_dims.left - 2, _dims.top - 2), kColorGreen2);	
-	
+	g->transBlitFrom(_composeSurface, _composeSurface.getBounds(), Common::Point(_dims.left - 2, _dims.top - 2), kColorGreen2);
+
 	return true;
 }
 
@@ -179,7 +181,7 @@ void MacWindow::updateInnerDims() {
 }
 
 void MacWindow::drawBorder() {
-	_borderIsDirty = false;	
+	_borderIsDirty = false;
 
 	ManagedSurface *g = &_borderSurface;
 
@@ -189,7 +191,7 @@ void MacWindow::drawBorder() {
 		drawBorderFromSurface(g);
 	else
 		drawSimpleBorder(g);
-	
+
 }
 
 void MacWindow::prepareBorderSurface(ManagedSurface *g) {
@@ -197,7 +199,7 @@ void MacWindow::prepareBorderSurface(ManagedSurface *g) {
 	int width = g->w;
 	int height = g->h;
 	// We draw rect with outer kColorGreen2 and inner kColorGreen, so on 2 passes we cut out
-	// scene by external shape of the border	
+	// scene by external shape of the border
 	g->clear(kColorGreen2);
 	g->fillRect(Common::Rect(sz, sz, width - sz, height - sz), kColorGreen);
 }
@@ -306,7 +308,7 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 	Image::BitmapDecoder bmpDecoder;
 	Graphics::Surface source;
 	Graphics::TransparentSurface *surface = new Graphics::TransparentSurface();
-	
+
 	bmpDecoder.loadStream(file);
 	source = *(bmpDecoder.getSurface());
 
@@ -319,7 +321,7 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 		_macBorder.addActiveBorder(*surface);
 	else
 		_macBorder.addInactiveBorder(*surface);
-	 
+
  }
 
 void MacWindow::drawBox(ManagedSurface *g, int x, int y, int w, int h) {
