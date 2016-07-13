@@ -581,9 +581,7 @@ void Gui::drawMainGameWindow() {
 	_mainGameWindow->setDirty(true);
 
 	if (data.objRef > 0 && data.objRef < 2000) {
-		if (!_assets.contains(objRef)) {
-			_assets[objRef] = new ImageAsset(objRef, _graphics);
-		}
+		ensureAssetLoaded(objRef);
 
 		_assets[objRef]->blitInto(
 			_mainGameWindow->getSurface(),
@@ -667,10 +665,7 @@ void Gui::drawObjectsInWindow(WindowReference target, Graphics::ManagedSurface *
 		mode = (BlitMode)data.children[i].mode;
 		pos = _engine->getObjPosition(child);
 		pos += Common::Point(border.leftOffset, border.topOffset);
-
-		if (!_assets.contains(child)) {
-			_assets[child] = new ImageAsset(child, _graphics);
-		}
+		ensureAssetLoaded(child);
 
 		_assets[child]->blitInto(
 			surface,
@@ -712,9 +707,7 @@ void Gui::drawWindowTitle(WindowReference target, Graphics::ManagedSurface * sur
 
 void Gui::drawDraggedObject() {
 	if (_draggedObj.id != 0) {
-		if (!_assets.contains(_draggedObj.id))
-			_assets[_draggedObj.id] = new ImageAsset(_draggedObj.id, _graphics);
-
+		ensureAssetLoaded(_draggedObj.id);
 		ImageAsset *asset = _assets[_draggedObj.id];
 
 		_draggedSurface.create(asset->getWidth(), asset->getHeight(), _screen.format);
@@ -955,21 +948,17 @@ bool Gui::canBeSelected(ObjID obj, const Common::Event &event, const Common::Rec
 }
 
 bool Gui::isRectInsideObject(Common::Rect target, ObjID obj) {
-	if (_assets.contains(obj)) {
-		Common::Rect bounds = _engine->getObjBounds(obj);
-		Common::Rect intersection = bounds.findIntersectingRect(target);
-		// We translate it to the image's coord system
-		intersection = Common::Rect(
-			intersection.left - bounds.left,
-			intersection.top - bounds.top,
-			intersection.left - bounds.left + intersection.width(),
-			intersection.top - bounds.top + intersection.height());
+	ensureAssetLoaded(obj);
+	Common::Rect bounds = _engine->getObjBounds(obj);
+	Common::Rect intersection = bounds.findIntersectingRect(target);
+	// We translate it to the image's coord system
+	intersection = Common::Rect(
+		intersection.left - bounds.left,
+		intersection.top - bounds.top,
+		intersection.left - bounds.left + intersection.width(),
+		intersection.top - bounds.top + intersection.height());
 
-		if (_assets[obj]->isRectInside(intersection)) {
-			return true;
-		}
-	}
-	return false;
+	return _assets[obj]->isRectInside(intersection);
 }
 
 void Gui::selectDraggable(ObjID child, WindowReference origin, Common::Point click) {
@@ -1144,9 +1133,7 @@ bool Gui::tryCloseWindow(WindowReference winID) {
 }
 
 Common::Point Gui::getObjMeasures(ObjID obj) {
-	if (!_assets.contains(obj)) {
-		_assets[obj] = new ImageAsset(obj, _graphics);
-	}
+	ensureAssetLoaded(obj);
 	uint w = _assets[obj]->getWidth();
 	uint h = _assets[obj]->getHeight();
 	return Common::Point(w, h);
@@ -1313,6 +1300,12 @@ void Gui::handleSingleClick(Common::Point pos) {
 void Gui::handleDoubleClick(Common::Point pos) {
 	debug("Double Click");
 	handleDragRelease(pos, false, true);
+}
+
+void Gui::ensureAssetLoaded(ObjID obj) {
+	if (!_assets.contains(obj)) {
+		_assets[obj] = new ImageAsset(obj, _graphics);
+	}
 }
 
 /* Ugly switches */
