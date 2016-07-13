@@ -71,27 +71,6 @@ enum {
 	kClickToContinueTextID = 0x84,
 	kStartGameFilenameID = 0x85
 };
-/*
-enum ControlAction {
-	kNoCommand = 0,
-	kStartOrResume = 1,
-	kClose = 2,
-	kTick = 3,
-	kActivateObject = 4,
-	kMoveObject = 5,
-	kConsume = 6,
-	kExamine = 7,
-	kGo = 8,
-	kHit = 9,
-	kOpen = 10,
-	kOperate = 11,
-	kSpeak = 12,
-	kBabble = 13,
-	kTargetName = 14,
-	kDebugObject = 15,
-	kClickToContinue = 16
-};
-*/
 
 enum FilePathID {
 	kMCVID = 1,
@@ -180,7 +159,7 @@ public:
 
 	virtual Common::Error run();
 
-	void requestQuit();	
+	void requestQuit();
 	void requestUnpause();
 	void selectControl(ControlAction action);
 	void activateCommand(ControlAction id);
@@ -196,7 +175,7 @@ public:
 
 	void enqueueObject(ObjectQueueID type, ObjID objID, ObjID target = 0);
 	void enqueueText(TextQueueID type, ObjID target, ObjID source, ObjID text);
-		
+
 	void runObjQueue();
 	bool printTexts();
 
@@ -205,7 +184,9 @@ public:
 	void updateDelta(Common::Point newPos);
 	void focusObjWin(ObjID objID);
 	void updateWindow(WindowReference winID);
-	
+
+	bool showTextEntry(ObjID text, ObjID srcObj, ObjID destObj);
+
 	// Data retrieval
 	bool isPaused();
 	bool needsClickToContinue();
@@ -220,6 +201,7 @@ public:
 	uint getPrefixNdx(ObjID obj);
 	Common::String getPrefixString(uint flag, ObjID obj);
 	Common::String getNoun(ObjID ndx);
+	Common::String getUserInput();
 
 	// Attributes consult
 	Common::Point getObjPosition(ObjID objID);
@@ -274,16 +256,16 @@ private:
 	// Data loading
 	bool loadGlobalSettings();
 	bool loadTextHuffman();
-	
+
 	const char* getGameFileName() const;
-	
+
 private: // Attributes
 
 	const ADGameDescription *_gameDescription;
 	Common::RandomSource *_rnd;
 
 	Common::MacResManager *_resourceManager;
-	
+
 	Console *_debugger;
 	Gui *_gui;
 	World *_world;
@@ -317,6 +299,7 @@ private: // Attributes
 	Common::Array<ObjID> _currentSelection;
 	Common::Array<ObjID> _selectedObjs;
 	Common::Point _deltaPoint;
+	Common::String _userInput;
 
 };
 
