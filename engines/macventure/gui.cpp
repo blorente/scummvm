@@ -116,6 +116,7 @@ Gui::Gui(MacVentureEngine *engine, Common::MacResManager *resman) {
 	_controlData = nullptr;
 	_draggedObj.id = 0;
 	_draggedObj.pos = Common::Point(0, 0);
+	_dialog = nullptr;
 
 	_cursor = new Cursor(this);
 	g_system->getTimerManager()->installTimerProc(&cursorTimerHandler, 500000, this, "macVentureCursor");
@@ -141,6 +142,9 @@ Gui::~Gui() {
 
 	if (_consoleText)
 		delete _consoleText;
+
+	if (_dialog)
+		delete _dialog;
 
 	Common::HashMap<ObjID, ImageAsset*>::const_iterator it = _assets.begin();
 	for (; it != _assets.end(); it++) {
@@ -185,7 +189,7 @@ void Gui::draw() {
 	_wm.draw();
 
 	drawDraggedObject();
-
+	drawDialog();
 	//drawWindowTitle(kMainGameWindow, _mainGameWindow->getSurface());
 }
 
@@ -705,6 +709,10 @@ void Gui::drawDraggedObject() {
 	}
 }
 
+void Gui::drawDialog() {
+	if (_dialog) _dialog->draw();
+}
+
 void Gui::updateWindow(WindowReference winID, bool containerOpen) {
 	if (winID == kNoWindow) return;
 	if (winID == kSelfWindow || containerOpen) {
@@ -794,6 +802,11 @@ void Gui::updateExit(ObjID obj) {
 void Gui::printText(const Common::String & text) {
 	debug(1, "Print Text: %s", text.c_str());
 	_consoleText->printLine(text, _outConsoleWindow->getDimensions().width());
+}
+
+void Gui::closeDialog() {
+	delete _dialog;
+	_dialog = nullptr;
 }
 
 void Gui::moveDraggedObject(Common::Point target) {
@@ -1008,6 +1021,8 @@ void Gui::handleMenuAction(MenuAction action) {
 		break;
 	case MacVenture::kMenuActionSaveAs:
 		debug("MacVenture Menu Action: Save As");
+		// HACK this should be wrapped in a function
+		_dialog = new Dialog(this, kSaveAsDialog);
 		break;
 	case MacVenture::kMenuActionQuit:
 		_engine->requestQuit();
@@ -1121,6 +1136,8 @@ bool Gui::processEvent(Common::Event &event) {
 	bool processed = false;
 
 	processed |= _cursor->processEvent(event);
+
+	if (_dialog && _dialog->processEvent(event)) return true;
 
 	if (event.type == Common::EVENT_MOUSEMOVE) {
 		if (_draggedObj.id != 0) {
@@ -1249,8 +1266,6 @@ bool Gui::processInventoryEvents(WindowClick click, Common::Event & event) {
 
 		// Find the appropriate window
 		WindowReference ref = findWindowAtPoint(event.mouse);
-		// TODO DELETE MEEEE!
-		debug("WindowFound: %d", ref);
 		if (ref == kNoWindow) return false;
 		Graphics::MacWindow *win = findWindow(ref);
 		WindowData &data = findWindowData((WindowReference) ref);
@@ -1269,11 +1284,14 @@ void Gui::processCursorTick() {
 
 void Gui::handleSingleClick(Common::Point pos) {
 	debug("Single Click");
+	// HACK
+	if (_dialog) return;
 	handleDragRelease(pos, false, false);
 }
 
 void Gui::handleDoubleClick(Common::Point pos) {
 	debug("Double Click");
+	if (_dialog) return;
 	handleDragRelease(pos, false, true);
 }
 
