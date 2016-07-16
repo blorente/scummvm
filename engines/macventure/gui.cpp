@@ -339,8 +339,8 @@ WindowReference Gui::createInventoryWindow(ObjID objRef) {
 
 	newWindow->setDimensions(newData.bounds);
 	newWindow->setCallback(inventoryWindowCallback, this);
-	//loadBorder(newWindow, "border_no_scroll_inac.bmp", false);
-	//loadBorder(newWindow, "border_no_scroll_act.bmp", true);
+	loadBorder(newWindow, "border_no_scroll_inac.bmp", false);
+	loadBorder(newWindow, "border_no_scroll_act.bmp", true);
 	_inventoryWindows.push_back(newWindow);
 
 	debug("Create new inventory window. Reference: %d", newData.refcon);
@@ -688,13 +688,12 @@ void Gui::drawWindowTitle(WindowReference target, Graphics::ManagedSurface * sur
 }
 
 void Gui::drawDraggedObject() {
-	if (_draggedObj.id != 0) {
+	if (_draggedObj.id != 0 &&
+			_engine->isObjVisible(_draggedObj.id)) {
 		ensureAssetLoaded(_draggedObj.id);
 		ImageAsset *asset = _assets[_draggedObj.id];
 
 		_draggedSurface.create(asset->getWidth(), asset->getHeight(), _screen.format);
-		_screen.copyRectToSurface(_draggedSurface, _draggedObj.pos.x, _draggedObj.pos.y,
-			Common::Rect(asset->getWidth() - 1, asset->getHeight() - 1));
 
 		asset->blitInto(&_draggedSurface, 0, 0, kBlitBIC);
 
@@ -822,6 +821,14 @@ void Gui::getTextFromUser() {
 	_engine->clickToContinue();
 }
 
+void Gui::loadGame(int slot) {
+	_engine->loadGameState(slot);
+}
+
+void Gui::saveInto(int slot) {
+	_engine->saveGameState(slot, "desc");
+	_engine->preparedToRun();
+}
 
 void Gui::moveDraggedObject(Common::Point target) {
 	Common::Point newPos = target + _draggedObj.mouseOffset;
@@ -859,9 +866,11 @@ WindowReference Gui::findWindowAtPoint(Common::Point point) {
 	Graphics::MacWindow *win;
 	for (it = _windowData->begin(); it != _windowData->end(); it++) {
 		win = findWindow(it->refcon);
-		if (win && win->getDimensions().contains(point) && it->refcon != kDiplomaWindow) { //HACK, diploma should be cosnidered
-			if (win->isActive())
-				return it->refcon;
+		if (win && it->refcon != kDiplomaWindow) { //HACK, diploma should be cosnidered
+			if (win->getDimensions().contains(point)) {
+				if (win->isActive())
+					return it->refcon;
+			}
 		}
 	}
 	return kNoWindow;
@@ -871,6 +880,7 @@ Common::Point Gui::getWindowSurfacePos(WindowReference reference) {
 	const WindowData &data = getWindowData(reference);
 	BorderBounds border = borderBounds(data.type);
 	Graphics::MacWindow *win = findWindow(reference);
+	if (!win) return Common::Point(0, 0);
 	return Common::Point(win->getDimensions().left + border.leftOffset, win->getDimensions().top + border.topOffset);
 }
 
@@ -978,9 +988,9 @@ void Gui::selectDraggable(ObjID child, WindowReference origin, Common::Point cli
 }
 
 void Gui::handleDragRelease(Common::Point pos, bool shiftPressed, bool isDoubleClick) {
-	WindowReference destinationWindow = findWindowAtPoint(pos);
-	if (destinationWindow == kNoWindow) return;
 	if (_draggedObj.id != 0) {
+		WindowReference destinationWindow = findWindowAtPoint(pos);
+		if (destinationWindow == kNoWindow) return;
 		if (_draggedObj.hasMoved) {
 			ObjID destObject = getWindowData(destinationWindow).objRef;
 			pos -= (_draggedObj.startPos - _draggedObj.mouseOffset);
@@ -1029,9 +1039,11 @@ void Gui::handleMenuAction(MenuAction action) {
 		break;
 	case MacVenture::kMenuActionOpen:
 		debug("MacVenture Menu Action: Open");
+		loadGame(0);
 		break;
 	case MacVenture::kMenuActionSave:
 		debug("MacVenture Menu Action: Save");
+		saveInto(0);
 		break;
 	case MacVenture::kMenuActionSaveAs:
 		debug("MacVenture Menu Action: Save As");
@@ -1141,8 +1153,8 @@ bool Gui::tryCloseWindow(WindowReference winID) {
 
 Common::Point Gui::getObjMeasures(ObjID obj) {
 	ensureAssetLoaded(obj);
- 	int w = MAX(0, (int)_assets[obj]->getWidth());
-	int h = MAX(0, (int)_assets[obj]->getHeight());
+ 	int w = _assets[obj]->getWidth();
+	int h = _assets[obj]->getHeight();
 	return Common::Point(w, h);
 }
 
@@ -1298,7 +1310,7 @@ void Gui::processCursorTick() {
 
 void Gui::handleSingleClick(Common::Point pos) {
 	debug("Single Click");
-	// HACK
+	// HACK THERE HAS TO BE A MORE ELEGANT WAY
 	if (_dialog) return;
 	handleDragRelease(pos, false, false);
 }
