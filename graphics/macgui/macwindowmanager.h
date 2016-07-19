@@ -56,7 +56,7 @@
 #include "graphics/fontman.h"
 #include "graphics/macgui/macwindow.h"
 
-namespace Graphics {	
+namespace Graphics {
 
 namespace MacGUIConstants {
 	enum {
@@ -98,6 +98,7 @@ public:
 	MacWindow *addWindow(bool scrollable, bool resizable, bool editable);
 	Menu *addMenu();
 	void setActive(int id);
+	void removeWindow(MacWindow *target);
 
 	void setFullRefresh(bool redraw) { _fullRefresh = true; }
 
@@ -117,11 +118,18 @@ private:
 	void drawDesktop();
 	void loadFonts();
 
+	void removeMarked();
+	void removeFromStack(BaseMacWindow *target);
+	void removeFromWindowList(BaseMacWindow *target);
+
 private:
 	ManagedSurface *_screen;
 
 	Common::List<BaseMacWindow *> _windowStack;
 	Common::Array<BaseMacWindow *> _windows;
+
+	Common::List<BaseMacWindow *> _windowsToRemove;
+	bool _needsRemoval;
 
 	int _lastId;
 	int _activeWindow;

@@ -78,6 +78,8 @@ MacWindow::MacWindow(int id, bool scrollable, bool resizable, bool editable, Mac
 	_draggedX = _draggedY = 0;
 
 	_type = kWindowWindow;
+
+	_closeable = true;
 }
 
 MacWindow::~MacWindow() {
@@ -141,13 +143,13 @@ bool MacWindow::draw(ManagedSurface *g, bool forceRedraw) {
 		drawBorder();
 
 	_contentIsDirty = false;
-	
+
 	// Compose
 	_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w - 2, _surface.h - 2), Common::Point(2, 2));
 	_composeSurface.transBlitFrom(_borderSurface, kColorGreen);
 
-	g->transBlitFrom(_composeSurface, _composeSurface.getBounds(), Common::Point(_dims.left - 2, _dims.top - 2), kColorGreen2);	
-	
+	g->transBlitFrom(_composeSurface, _composeSurface.getBounds(), Common::Point(_dims.left - 2, _dims.top - 2), kColorGreen2);
+
 	return true;
 }
 
@@ -178,7 +180,7 @@ void MacWindow::updateInnerDims() {
 }
 
 void MacWindow::drawBorder() {
-	_borderIsDirty = false;	
+	_borderIsDirty = false;
 
 	ManagedSurface *g = &_borderSurface;
 
@@ -188,7 +190,7 @@ void MacWindow::drawBorder() {
 		drawBorderFromSurface(g);
 	else
 		drawSimpleBorder(g);
-	
+
 }
 
 void MacWindow::prepareBorderSurface(ManagedSurface *g) {
@@ -196,7 +198,7 @@ void MacWindow::prepareBorderSurface(ManagedSurface *g) {
 	int width = g->w;
 	int height = g->h;
 	// We draw rect with outer kColorGreen2 and inner kColorGreen, so on 2 passes we cut out
-	// scene by external shape of the border	
+	// scene by external shape of the border
 	g->clear(kColorGreen2);
 	g->fillRect(Common::Rect(sz, sz, width - sz, height - sz), kColorGreen);
 }
@@ -306,6 +308,10 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 		 _macBorder.addInactiveBorder(border);
  }
 
+ void MacWindow::setCloseable(bool closeable) {
+	 _closeable = closeable;
+ }
+
 void MacWindow::drawBox(ManagedSurface *g, int x, int y, int w, int h) {
 	Common::Rect r(x, y, x + w + 1, y + h + 1);
 
@@ -387,6 +393,10 @@ bool MacWindow::processEvent(Common::Event &event) {
 
 			_draggedX = event.mouse.x;
 			_draggedY = event.mouse.y;
+		}
+
+		if (click == kBorderCloseButton && _closeable) {
+			_wm->removeWindow(this);
 		}
 
 		break;
