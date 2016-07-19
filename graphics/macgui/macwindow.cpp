@@ -79,6 +79,8 @@ MacWindow::MacWindow(int id, bool scrollable, bool resizable, bool editable, Mac
 	_draggedX = _draggedY = 0;
 
 	_type = kWindowWindow;
+
+	_closeable = true;
 }
 
 MacWindow::~MacWindow() {
@@ -324,6 +326,10 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 
  }
 
+ void MacWindow::setCloseable(bool closeable) {
+	 _closeable = closeable;
+ }
+
 void MacWindow::drawBox(ManagedSurface *g, int x, int y, int w, int h) {
 	Common::Rect r(x, y, x + w + 1, y + h + 1);
 
@@ -405,6 +411,10 @@ bool MacWindow::processEvent(Common::Event &event) {
 
 			_draggedX = event.mouse.x;
 			_draggedY = event.mouse.y;
+		}
+
+		if (click == kBorderCloseButton && _closeable) {
+			_wm->removeWindow(this);
 		}
 
 		break;

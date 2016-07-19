@@ -142,6 +142,8 @@ public:
 
 	void loadBorder(Common::SeekableReadStream &file, bool active);
 
+	void setCloseable(bool closeable);
+
 private:
 	void drawBorder();
 	void prepareBorderSurface(ManagedSurface *g);
@@ -163,6 +165,8 @@ private:
 	bool _resizable;
 	bool _active;
 	bool _borderIsDirty;
+
+	bool _closeable;
 
 	bool _beingDragged, _beingResized;
 	int _draggedX, _draggedY;
