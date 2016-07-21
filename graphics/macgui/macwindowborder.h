@@ -57,6 +57,12 @@
 
 namespace Graphics {
 
+enum MacBorderOffset {
+	kBorderOffsetLeft = 0,
+	kBorderOffsetRight = 1,
+	kBorderOffsetTop = 2,
+	kBorderOffsetBottom	= 3
+};
 
 class MacWindowBorder {
 public:
@@ -66,6 +72,11 @@ public:
 	bool hasBorder(bool active);
 	void addActiveBorder(TransparentSurface &source);
 	void addInactiveBorder(TransparentSurface &source);
+
+	bool hasOffsets();
+	void setBorderOffsets(int left, int right, int top, int bottom);
+	int getBorderOffset(MacBorderOffset offset);
+
 	void blitBorderInto(ManagedSurface &destination, bool active);
 
 private:
@@ -76,8 +87,10 @@ private:
 	bool _activeInitialized;
 	bool _inactiveInitialized;
 
+	bool _hasOffsets;
+	int _borderOffsets[4];
+
 };
 
 } // End of namespace Graphics
 #endif
-
