@@ -138,7 +138,7 @@ public:
 	bool processEvent(Common::Event &event);
 	bool hasAllFocus() { return _beingDragged || _beingResized; }
 
-	void setBorder(TransparentSurface &border, bool active);
+	void setBorder(TransparentSurface &border, bool active, int lo, int ro, int to, int bo);
 
 	void setCloseable(bool closeable);
 
@@ -165,6 +165,8 @@ private:
 	bool _borderIsDirty;
 
 	bool _closeable;
+
+	int _borderWidth;
 
 	bool _beingDragged, _beingResized;
 	int _draggedX, _draggedY;
