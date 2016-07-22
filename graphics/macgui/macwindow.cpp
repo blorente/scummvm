@@ -335,6 +335,8 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 
 		if (!_macBorder.hasOffsets())
 			_macBorder.setBorderOffsets(lo, ro, to, bo);
+
+		updateInnerDims();
  }
 
  void MacWindow::setCloseable(bool closeable) {
