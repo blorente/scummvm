@@ -180,13 +180,14 @@ static void drawPixelInverted(int x, int y, int color, void *data) {
 }
 
 void MacWindow::updateInnerDims() {
-	_innerDims = _dims;
 	if (_macBorder.hasBorder(_active) && _macBorder.hasOffsets()) {
-		int maxW = _innerDims.width() - _macBorder.getBorderOffset(kBorderOffsetLeft) - _macBorder.getBorderOffset(kBorderOffsetRight);
-		int maxH = _innerDims.width() - _macBorder.getBorderOffset(kBorderOffsetTop) - _macBorder.getBorderOffset(kBorderOffsetBottom);
-		_innerDims.clip(maxW, maxH);
-		_innerDims.translate(_macBorder.getBorderOffset(kBorderOffsetLeft), _macBorder.getBorderOffset(kBorderOffsetTop));
+		_innerDims = Common::Rect(
+			_dims.left + _macBorder.getBorderOffset(kBorderOffsetLeft),
+			_dims.top + _macBorder.getBorderOffset(kBorderOffsetTop),
+			_dims.right - _macBorder.getBorderOffset(kBorderOffsetRight),
+			_dims.bottom - _macBorder.getBorderOffset(kBorderOffsetBottom));
 	} else {
+		_innerDims = _dims;
 		_innerDims.grow(-kBorderWidth);
 	}
 }
@@ -313,9 +314,7 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 	_borderIsDirty = true;
  }
 
-<<<<<<< HEAD
-
- void MacWindow::loadBorder(Common::SeekableReadStream &file, bool active) {
+ void MacWindow::loadBorder(Common::SeekableReadStream &file, bool active, int lo, int ro, int to, int bo) {
 
 	Image::BitmapDecoder bmpDecoder;
 	Graphics::Surface source;
@@ -329,11 +328,10 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 	surface->copyFrom(source);
 	surface->applyColorKey(255, 0, 255, false);
 
- void MacWindow::setBorder(TransparentSurface &border, bool active, int lo, int ro, int to, int bo) {
 	 if (active)
-		 _macBorder.addActiveBorder(border);
+		 _macBorder.addActiveBorder(*surface);
 	 else
-		 _macBorder.addInactiveBorder(border);
+		 _macBorder.addInactiveBorder(*surface);
 
 		if (!_macBorder.hasOffsets())
 			_macBorder.setBorderOffsets(lo, ro, to, bo);

@@ -8,7 +8,7 @@
 namespace Graphics {
 
 using namespace Graphics::MacGUIConstants;
-	
+
 MacWindowBorder::MacWindowBorder() : _activeInitialized(false), _inactiveInitialized(false) {
 	_activeBorder = nullptr;
 	_inactiveBorder = nullptr;
@@ -56,7 +56,7 @@ int MacWindowBorder::getBorderOffset(MacBorderOffset offset) {
 }
 
 void MacWindowBorder::blitBorderInto(ManagedSurface &destination, bool active) {
-	
+
 	TransparentSurface srf;
 	NinePatchBitmap *src = active ? _activeBorder : _inactiveBorder;
 
@@ -66,7 +66,7 @@ void MacWindowBorder::blitBorderInto(ManagedSurface &destination, bool active) {
 	g_system->getPaletteManager()->grabPalette(palette, 0, kColorCount);
 
 	src->blit(srf, 0, 0, srf.w, srf.h, palette, kColorCount);
-	destination.transBlitFrom(srf, destination.format.ARGBToColor(0, 255, 255, 255));
+	destination.transBlitFrom(srf, destination.format.ARGBToColor(0, 0, 0, 255));
 }
 
 } // End of namespace Graphics

@@ -140,7 +140,8 @@ public:
 	bool processEvent(Common::Event &event);
 	bool hasAllFocus() { return _beingDragged || _beingResized; }
 
-	void setBorder(TransparentSurface &border, bool active, int lo, int ro, int to, int bo);
+	void loadBorder(Common::SeekableReadStream &file, bool active, int lo, int ro, int to, int bo);
+	//void setBorder(TransparentSurface &border, bool active);
 
 	void setCloseable(bool closeable);
 
