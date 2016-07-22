@@ -150,10 +150,11 @@ bool MacWindow::draw(ManagedSurface *g, bool forceRedraw) {
 	_contentIsDirty = false;
 
 	// Compose
-	_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w - 2, _surface.h - 2), Common::Point(2, 2));
+	//_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w - 2, _surface.h - 2), Common::Point(2, 2));
+	_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w, _surface.h), Common::Point(0, 0));
 	_composeSurface.transBlitFrom(_borderSurface, kColorGreen);
 
-	g->transBlitFrom(_composeSurface, _composeSurface.getBounds(), Common::Point(_dims.left - 2, _dims.top - 2), kColorGreen2);
+	g->transBlitFrom(_composeSurface, _composeSurface.getBounds(), Common::Point(_dims.left, _dims.top), kColorGreen2);
 
 	return true;
 }
@@ -197,13 +198,11 @@ void MacWindow::drawBorder() {
 
 	ManagedSurface *g = &_borderSurface;
 
-	prepareBorderSurface(g);
-
 	if (_macBorder.hasBorder(_active))
 		drawBorderFromSurface(g);
-	else
+	else {
 		drawSimpleBorder(g);
-
+	}
 }
 
 void MacWindow::prepareBorderSurface(ManagedSurface *g) {
@@ -217,6 +216,11 @@ void MacWindow::prepareBorderSurface(ManagedSurface *g) {
 }
 
 void MacWindow::drawBorderFromSurface(ManagedSurface *g) {
+	g->clear(kColorGreen2);
+	Common::Rect inside = _innerDims;
+	inside.moveTo(_macBorder.getBorderOffset(kBorderOffsetLeft), _macBorder.getBorderOffset(kBorderOffsetTop));
+	g->fillRect(inside, kColorGreen);
+
 	_macBorder.blitBorderInto(_borderSurface, _active);
 }
 
@@ -228,6 +232,8 @@ void MacWindow::drawSimpleBorder(ManagedSurface *g) {
 	int y = 0;
 	int width = _borderSurface.w;
 	int height = _borderSurface.h;
+
+	prepareBorderSurface(g);
 
 	drawBox(g, x, y, size, size);
 	drawBox(g, x + width - size - 1, y, size, size);
