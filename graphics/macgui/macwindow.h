@@ -75,6 +75,8 @@ namespace MacWindowConstants {
 		kBorderNone = 0,
 		kBorderScrollUp,
 		kBorderScrollDown,
+		kBorderScrollLeft,
+		kBorderScrollRight,
 		kBorderCloseButton,
 		kBorderInner,
 		kBorderBorder,
@@ -156,6 +158,10 @@ private:
 	void updateInnerDims();
 	WindowClick isInBorder(int x, int y);
 
+	bool isInCloseButton(int x, int y);
+	bool isInResizeButton(int x, int y);
+	WindowClick isInScroll(int x, int y);
+
 private:
 	ManagedSurface _borderSurface;
 	ManagedSurface _composeSurface;
@@ -181,6 +187,8 @@ private:
 
 	Common::String _title;
 };
+
+
 
 } // End of namespace Graphics
 

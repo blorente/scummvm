@@ -377,15 +377,7 @@ void Gui::loadBorder(Graphics::MacWindow *target, Common::String filename, bool 
 
 	if (stream) {
 		debug(4, "Loading %s border from %s", (active ? "active" : "inactive"), filename);
-		bmpDecoder.loadStream(*stream);
-		source = *(bmpDecoder.getSurface());
-
-		source.convertToInPlace(surface->getSupportedPixelFormat(), bmpDecoder.getPalette());
-		surface->create(source.w, source.h, source.format);
-		surface->copyFrom(source);
-		surface->applyColorKey(255, 0, 255, false);
-
-		target->setBorder(*surface, active, 10, 10, 1, 1);
+		target->loadBorder(*stream, active, 10, 10, 1, 1);
 
 		borderfile.close();
 

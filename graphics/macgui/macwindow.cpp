@@ -150,7 +150,6 @@ bool MacWindow::draw(ManagedSurface *g, bool forceRedraw) {
 	_contentIsDirty = false;
 
 	// Compose
-	//_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w - 2, _surface.h - 2), Common::Point(2, 2));
 	_composeSurface.blitFrom(_surface, Common::Rect(0, 0, _surface.w, _surface.h), Common::Point(0, 0));
 	_composeSurface.transBlitFrom(_borderSurface, kColorGreen);
 
@@ -366,18 +365,55 @@ WindowClick MacWindow::isInBorder(int x, int y) {
 	if (_innerDims.contains(x, y))
 		return kBorderInner;
 
-	if (x >= _innerDims.left - _borderWidth && x < _innerDims.left && y >= _innerDims.top - _borderWidth && y < _innerDims.top)
+	if (isInCloseButton(x, y))
 		return kBorderCloseButton;
 
 	if (_resizable)
-		if (x >= _innerDims.right && x < _innerDims.right + _borderWidth && y >= _innerDims.bottom && y < _innerDims.bottom + _borderWidth)
+		if (isInResizeButton(x, y))
 			return kBorderResizeButton;
 
-	if (_scrollable && x >= _innerDims.right && x < _innerDims.right + _borderWidth) {
-		if (y < _innerDims.top - _borderWidth)
+	if (_scrollable)
+	 	return isInScroll(x, y);
+
+	return kBorderBorder;
+}
+
+bool MacWindow::isInCloseButton(int x, int y) {
+	int bLeft = kBorderWidth;
+	int bTop = kBorderWidth;
+	if (_macBorder.hasOffsets()) {
+		bLeft = _macBorder.getBorderOffset(kBorderOffsetLeft);
+		bTop = _macBorder.getBorderOffset(kBorderOffsetTop);
+	}
+	return (x >= _innerDims.left - bLeft && x < _innerDims.left && y >= _innerDims.top - bTop && y < _innerDims.top);
+}
+
+bool MacWindow::isInResizeButton(int x, int y) {
+	int bRight = kBorderWidth;
+	int bBottom = kBorderWidth;
+	if (_macBorder.hasOffsets()) {
+		bRight = _macBorder.getBorderOffset(kBorderOffsetRight);
+		bBottom = _macBorder.getBorderOffset(kBorderOffsetBottom);
+	}
+	return (x >= _innerDims.right && x < _innerDims.right + bRight && y >= _innerDims.bottom && y < _innerDims.bottom + bBottom);
+}
+
+WindowClick MacWindow::isInScroll(int x, int y) {
+	int bLeft = kBorderWidth;
+	int bTop = kBorderWidth;
+	int bRight = kBorderWidth;
+	int bBottom = kBorderWidth;
+	if (_macBorder.hasOffsets()) {
+		bLeft = _macBorder.getBorderOffset(kBorderOffsetLeft);
+		bTop = _macBorder.getBorderOffset(kBorderOffsetTop);
+		bRight = _macBorder.getBorderOffset(kBorderOffsetRight);
+		bBottom = _macBorder.getBorderOffset(kBorderOffsetBottom);
+	}
+	if (x >= _innerDims.right && x < _innerDims.right + bRight) {
+		if (y < _innerDims.top - bTop)
 			return kBorderBorder;
 
-		if (y >= _innerDims.bottom + _borderWidth)
+		if (y >= _innerDims.bottom + bBottom)
 			return kBorderBorder;
 
 		if (y >= _innerDims.top + _innerDims.height() / 2)
@@ -386,7 +422,18 @@ WindowClick MacWindow::isInBorder(int x, int y) {
 		return kBorderScrollUp;
 	}
 
-	return kBorderBorder;
+	if (y >= _innerDims.bottom && y < _innerDims.bottom + bBottom) {
+		if (x < _innerDims.left - bTop)
+			return kBorderBorder;
+
+		if (x >= _innerDims.right + bRight)
+			return kBorderBorder;
+
+		if (x >= _innerDims.left + _innerDims.width() / 2)
+			return kBorderScrollRight;
+
+		return kBorderScrollLeft;
+	}
 }
 
 bool MacWindow::processEvent(Common::Event &event) {
