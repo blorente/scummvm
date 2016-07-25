@@ -409,6 +409,7 @@ WindowClick MacWindow::isInScroll(int x, int y) {
 		bRight = _macBorder.getBorderOffset(kBorderOffsetRight);
 		bBottom = _macBorder.getBorderOffset(kBorderOffsetBottom);
 	}
+
 	if (x >= _innerDims.right && x < _innerDims.right + bRight) {
 		if (y < _innerDims.top - bTop)
 			return kBorderBorder;
