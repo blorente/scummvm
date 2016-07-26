@@ -182,10 +182,10 @@ static void drawPixelInverted(int x, int y, int color, void *data) {
 void MacWindow::updateInnerDims() {
 	if (_macBorder.hasBorder(_active) && _macBorder.hasOffsets()) {
 		_innerDims = Common::Rect(
-			_dims.left + _macBorder.getBorderOffset(kBorderOffsetLeft),
-			_dims.top + _macBorder.getBorderOffset(kBorderOffsetTop),
-			_dims.right - _macBorder.getBorderOffset(kBorderOffsetRight),
-			_dims.bottom - _macBorder.getBorderOffset(kBorderOffsetBottom));
+			_dims.left + _macBorder.getOffset(kBorderOffsetLeft),
+			_dims.top + _macBorder.getOffset(kBorderOffsetTop),
+			_dims.right - _macBorder.getOffset(kBorderOffsetRight),
+			_dims.bottom - _macBorder.getOffset(kBorderOffsetBottom));
 	} else {
 		_innerDims = _dims;
 		_innerDims.grow(-kBorderWidth);
@@ -217,7 +217,7 @@ void MacWindow::prepareBorderSurface(ManagedSurface *g) {
 void MacWindow::drawBorderFromSurface(ManagedSurface *g) {
 	g->clear(kColorGreen2);
 	Common::Rect inside = _innerDims;
-	inside.moveTo(_macBorder.getBorderOffset(kBorderOffsetLeft), _macBorder.getBorderOffset(kBorderOffsetTop));
+	inside.moveTo(_macBorder.getOffset(kBorderOffsetLeft), _macBorder.getOffset(kBorderOffsetTop));
 	g->fillRect(inside, kColorGreen);
 
 	_macBorder.blitBorderInto(_borderSurface, _active);
@@ -339,7 +339,7 @@ void MacWindow::setHighlight(WindowClick highlightedPart) {
 		 _macBorder.addInactiveBorder(*surface);
 
 		if (!_macBorder.hasOffsets())
-			_macBorder.setBorderOffsets(lo, ro, to, bo);
+			_macBorder.setOffsets(lo, ro, to, bo);
 
 		updateInnerDims();
  }
@@ -382,8 +382,8 @@ bool MacWindow::isInCloseButton(int x, int y) {
 	int bLeft = kBorderWidth;
 	int bTop = kBorderWidth;
 	if (_macBorder.hasOffsets()) {
-		bLeft = _macBorder.getBorderOffset(kBorderOffsetLeft);
-		bTop = _macBorder.getBorderOffset(kBorderOffsetTop);
+		bLeft = _macBorder.getOffset(kBorderOffsetLeft);
+		bTop = _macBorder.getOffset(kBorderOffsetTop);
 	}
 	return (x >= _innerDims.left - bLeft && x < _innerDims.left && y >= _innerDims.top - bTop && y < _innerDims.top);
 }
@@ -392,8 +392,8 @@ bool MacWindow::isInResizeButton(int x, int y) {
 	int bRight = kBorderWidth;
 	int bBottom = kBorderWidth;
 	if (_macBorder.hasOffsets()) {
-		bRight = _macBorder.getBorderOffset(kBorderOffsetRight);
-		bBottom = _macBorder.getBorderOffset(kBorderOffsetBottom);
+		bRight = _macBorder.getOffset(kBorderOffsetRight);
+		bBottom = _macBorder.getOffset(kBorderOffsetBottom);
 	}
 	return (x >= _innerDims.right && x < _innerDims.right + bRight && y >= _innerDims.bottom && y < _innerDims.bottom + bBottom);
 }
@@ -404,10 +404,10 @@ WindowClick MacWindow::isInScroll(int x, int y) {
 	int bRight = kBorderWidth;
 	int bBottom = kBorderWidth;
 	if (_macBorder.hasOffsets()) {
-		bLeft = _macBorder.getBorderOffset(kBorderOffsetLeft);
-		bTop = _macBorder.getBorderOffset(kBorderOffsetTop);
-		bRight = _macBorder.getBorderOffset(kBorderOffsetRight);
-		bBottom = _macBorder.getBorderOffset(kBorderOffsetBottom);
+		bLeft = _macBorder.getOffset(kBorderOffsetLeft);
+		bTop = _macBorder.getOffset(kBorderOffsetTop);
+		bRight = _macBorder.getOffset(kBorderOffsetRight);
+		bBottom = _macBorder.getOffset(kBorderOffsetBottom);
 	}
 
 	if (x >= _innerDims.right && x < _innerDims.right + bRight) {

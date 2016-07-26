@@ -42,7 +42,7 @@ bool MacWindowBorder::hasOffsets() {
 	return _hasOffsets;
 }
 
-void MacWindowBorder::setBorderOffsets(int left, int right, int top, int bottom) {
+void MacWindowBorder::setOffsets(int left, int right, int top, int bottom) {
 	_borderOffsets[0] = left;
 	_borderOffsets[1] = right;
 	_borderOffsets[2] = top;
@@ -50,7 +50,7 @@ void MacWindowBorder::setBorderOffsets(int left, int right, int top, int bottom)
 	_hasOffsets = true;
 }
 
-int MacWindowBorder::getBorderOffset(MacBorderOffset offset) {
+int MacWindowBorder::getOffset(MacBorderOffset offset) {
 	return _borderOffsets[offset];
 }
 
