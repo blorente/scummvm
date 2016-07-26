@@ -15,7 +15,6 @@ MacWindowBorder::MacWindowBorder() : _activeInitialized(false), _inactiveInitial
 	_hasOffsets = false;
 }
 
-
 MacWindowBorder::~MacWindowBorder() {
 	if (_activeBorder)
 		delete _activeBorder;

@@ -435,6 +435,8 @@ WindowClick MacWindow::isInScroll(int x, int y) {
 
 		return kBorderScrollLeft;
 	}
+
+	return kBorderBorder;
 }
 
 bool MacWindow::processEvent(Common::Event &event) {
