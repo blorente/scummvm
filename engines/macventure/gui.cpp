@@ -685,7 +685,9 @@ void Gui::drawObjectsInWindow(WindowReference target, Graphics::ManagedSurface *
 
 		// For test
 		if (MACVENTURE_DEBUG_GUI) {
-			surface->frameRect(_engine->getObjBounds(child), kColorGreen);
+			Common::Rect testBounds = _engine->getObjBounds(child);
+			testBounds.translate(-data.scrollPos.x, -data.scrollPos.y);
+			surface->frameRect(testBounds, kColorGreen);
 		}
 
 	}
@@ -984,7 +986,7 @@ void Gui::checkSelect(const WindowData &data, const Common::Event &event, const 
 			child = (*it).obj;
 		}
 	}
-	if (child != 0) selectDraggable(child, ref, event.mouse);
+	if (child != 0) selectDraggable(child, ref, event.mouse, data.scrollPos);
 }
 
 bool Gui::canBeSelected(ObjID obj, const Common::Event &event, const Common::Rect &clickRect, WindowReference ref) {
@@ -1006,12 +1008,12 @@ bool Gui::isRectInsideObject(Common::Rect target, ObjID obj) {
 	return _assets[obj]->isRectInside(intersection);
 }
 
-void Gui::selectDraggable(ObjID child, WindowReference origin, Common::Point click) {
+void Gui::selectDraggable(ObjID child, WindowReference origin, Common::Point click, Common::Point scroll) {
 	if (_engine->isObjClickable(child) && _draggedObj.id == 0) {
 		_draggedObj.hasMoved = false;
 		_draggedObj.id = child;
 		_draggedObj.startWin = origin;
-		_draggedObj.mouseOffset = (_engine->getObjPosition(child) + getWindowSurfacePos(origin)) - click;
+		_draggedObj.mouseOffset = (_engine->getObjPosition(child) + getWindowSurfacePos(origin)) - click - scroll;
 		_draggedObj.pos = click + _draggedObj.mouseOffset;
 		_draggedObj.startPos = _draggedObj.pos;
 	}
@@ -1265,7 +1267,7 @@ bool MacVenture::Gui::processMainGameEvents(WindowClick click, Common::Event & e
 		WindowData &data = findWindowData(kMainGameWindow);
 		Common::Point pos;
 		// Click rect to local coordinates. We assume the click is inside the window ^
-		Common::Rect clickRect = calculateClickRect(event.mouse, _mainGameWindow->getDimensions());
+		Common::Rect clickRect = calculateClickRect(event.mouse + data.scrollPos, _mainGameWindow->getDimensions());
 		checkSelect(data, event, clickRect, kMainGameWindow);
 	}
 	return false;
@@ -1373,7 +1375,7 @@ bool Gui::processInventoryEvents(WindowClick click, Common::Event & event) {
 		if (click == kBorderInner) {
 			Common::Point pos;
 			// Click rect to local coordinates. We assume the click is inside the window ^
-			Common::Rect clickRect = calculateClickRect(event.mouse, win->getDimensions());
+			Common::Rect clickRect = calculateClickRect(event.mouse + data.scrollPos, win->getDimensions());
 			checkSelect(data, event, clickRect, (WindowReference)ref);
 		}
 	}
