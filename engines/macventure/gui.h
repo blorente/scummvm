@@ -155,6 +155,8 @@ public:
 	void setTextInput(Common::String str);
 	void closeDialog();
 
+
+	// TODO: Currently unused, we are using ScummVM dialogs instead.
 	void loadGame(int slot);
 	void saveInto(int slot);
 
