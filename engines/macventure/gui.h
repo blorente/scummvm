@@ -129,6 +129,7 @@ public:
 	const Graphics::Font& getCurrentFont();
 
 	// Clicks
+	void selectForDrag(Common::Point pos);
 	void handleSingleClick(Common::Point pos);
 	void handleDoubleClick(Common::Point pos);
 
@@ -230,8 +231,8 @@ private: // Methods
 	Graphics::MacWindow *findWindow(WindowReference reference);
 
 	// Utils
-	bool canBeSelected(ObjID obj, const Common::Event &event, const Common::Rect &clickRect, WindowReference ref);
-	void checkSelect(const WindowData &data, const Common::Event &event, const Common::Rect &clickRect, WindowReference ref);
+	void checkSelect(const WindowData &data, Common::Point pos, const Common::Rect &clickRect, WindowReference ref);
+	bool canBeSelected(ObjID obj, const Common::Rect &clickRect, WindowReference ref);
 	bool isRectInsideObject(Common::Rect target, ObjID obj);
 	void selectDraggable(ObjID child, WindowReference origin, Common::Point startPos, Common::Point scroll);
 	void handleDragRelease(Common::Point pos, bool shiftPressed, bool isDoubleClick);
@@ -307,6 +308,10 @@ public:
 		return _pos;
 	}
 
+	bool canSelectDraggable() {
+		return _state == kCursorSCDrag;
+	}
+
 private:
 
 	void changeState(CursorInput input) {
@@ -322,6 +327,7 @@ private:
 		switch (_state) {
 		case kCursorSCStart:
 			g_system->getTimerManager()->installTimerProc(&cursorTimerHandler, 300000, this, "macVentureCursor");
+			_gui->selectForDrag(_pos);
 			break;
 		case kCursorDCStart:
 			g_system->getTimerManager()->installTimerProc(&cursorTimerHandler, 300000, this, "macVentureCursor");
