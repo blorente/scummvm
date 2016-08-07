@@ -26,7 +26,7 @@
 namespace MacVenture {
 namespace Tests {
 
-DEF_TEST(t0, )
+DEF_TEST(dummy, ;)
 
 DEF_TEST(adding_works,
 	ASSERT_TRUE(1 + 1 == 2);
@@ -45,8 +45,17 @@ DEF_TEST(multiple_assert_tests,
 )
 
 DEF_TEST(failing_test,
-	ASSERT_TRUE (1 + 1 == 4);
+	ASSERT_TRUE(1 + 1 == 4);
 )
+
+DEF_TEST(test_assert_false,
+	ASSERT_FALSE(1 == 2);
+)
+
+DEF_TEST(test_assert_eq,
+	ASSERT_EQUALS((1 + 1), 2);
+)
+
 
 DEF_TEST(mock_container,
 	Container *scriptContainer = new Container("Shadowgate II/Shadow Filter");
@@ -55,11 +64,13 @@ DEF_TEST(mock_container,
 
 static const TestCase tests[] = {
 	// Framework tests
-	TEST_CASE("Dummy", *t0),
-	TEST_CASE("One Plus one is two", *adding_works),
-	TEST_CASE("Test framework allows assignments", *assign_possible),
+	TEST_CASE("Dummy", dummy),
+	TEST_CASE("One Plus one is two", adding_works),
+	TEST_CASE("Test framework allows assignments", assign_possible),
 	TEST_CASE("Multiple asserts allowed", multiple_assert_tests),
-	TEST_CASE("This is supposed to fail", *failing_test),
+	TEST_CASE("This is supposed to fail", failing_test),
+	TEST_CASE("One is different than two", test_assert_false),
+	TEST_CASE("One plus one is still two", test_assert_eq),
 	// Engine tests
 	TEST_CASE("Containers can be instantiated", *mock_container),
 	TEST_CASE_END_SUITE()
@@ -70,8 +81,8 @@ void runTests() {
 	int i = 0;
 	while (tests[i].name != "END_SUITE") {
 		bool testResult = tests[i].testFunction();
-		Common::String resultMessage = testResult ? "OK" : "FAIL";
-		debug("[ TEST ] %s...%s", tests[i].name.c_str(), resultMessage.c_str());
+		Common::String resultMessage = testResult ? " OK " : "FAIL";
+		debug("[ %s ] %s", resultMessage.c_str(), tests[i].name.c_str());
 		i++;
 	}
 }
