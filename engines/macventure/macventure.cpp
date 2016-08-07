@@ -29,6 +29,8 @@
 
 #include "macventure/macventure.h"
 
+#include "macventure/tests/tests.h"
+
 // To move
 #include "common/file.h"
 
@@ -56,9 +58,17 @@ MacVentureEngine::MacVentureEngine(OSystem *syst, const ADGameDescription *gameD
 
 	_debugger = NULL;
 	_gui = NULL;
+	_scriptEngine = NULL;
+	_filenames = NULL;
+
+	_decodingDirectArticles = NULL;
+	_decodingNamingArticles = NULL;
+	_decodingIndirectArticles = NULL;
+	_textHuffman = NULL;
 
 	_soundManager = NULL;
 
+	_dataBundle = NULL;
 
 	debug("MacVenture::MacVentureEngine()");
 }
@@ -67,10 +77,18 @@ MacVentureEngine::~MacVentureEngine() {
 	debug("MacVenture::~MacVentureEngine()");
 
 	DebugMan.clearAllDebugChannels();
-	delete _rnd;
-	delete _debugger;
-	delete _gui;
-	delete _scriptEngine;
+
+	if (_rnd)
+		delete _rnd;
+
+	if (_debugger)
+		delete _debugger;
+
+	if (_gui)
+		delete _gui;
+
+	if (_scriptEngine)
+		delete _scriptEngine;
 
 	if (_filenames)
 		delete _filenames;
@@ -102,10 +120,16 @@ void MacVentureEngine::initDebugChannels() {
 	DebugMan.addDebugChannel(kMVDebugScript, "script", "Script engine");
 	DebugMan.addDebugChannel(kMVDebugSound, "sound", "Sound decoders");
 	DebugMan.addDebugChannel(kMVDebugContainer, "container", "Containers");
+	DebugMan.addDebugChannel(kMVDebugTests, "tests", "Automated test suite");
 }
 
 Common::Error MacVentureEngine::run() {
 	debug("MacVenture::MacVentureEngine::init()");
+
+	if (DebugMan.isDebugChannelEnabled(kMVDebugTests)) {
+		Tests::runTests();
+		return Common::kNoError;
+	}
 
 	initGraphics(kScreenWidth, kScreenHeight, true);
 

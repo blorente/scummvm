@@ -15,7 +15,8 @@ MODULE_OBJS := \
 	windows.o \
 	sound.o \
 	saveload.o \
-	datafiles.o
+	datafiles.o \
+	tests/tests.o
 
 
 MODULE_DIRS += \
