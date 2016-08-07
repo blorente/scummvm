@@ -1,30 +1,16 @@
-/* ScummVM - Graphic Adventure Engine
-*
-* ScummVM is the legal property of its developers, whose names
-* are too numerous to list here. Please refer to the COPYRIGHT
-* file distributed with this source distribution.
-*
-* This program is free software; you can redistribute it and/or
-* modify it under the terms of the GNU General Public License
-* as published by the Free Software Foundation; either version 2
-* of the License, or (at your option) any later version.
-
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-*
-*/
-
 #include "macventure/macventure.h"
-#include "macventure/tests/tests.h"
+#include "common/debug.h"
+#include "macventure/tests/ktest.h"
 
-namespace MacVenture {
+namespace KWorks {
 namespace Tests {
+
+void print(const char *msg) {
+	debug(msg);
+}
+void print(const char *msg, int a, int b, const char *extra) {
+	debug(msg, a, b, extra);
+}
 
 DEF_TEST(dummy, ;)
 
@@ -58,11 +44,11 @@ DEF_TEST(test_assert_eq,
 
 
 DEF_TEST(mock_container,
-	Container *scriptContainer = new Container("Shadowgate II/Shadow Filter");
+	MacVenture::Container *scriptContainer = new MacVenture::Container("Shadowgate II/Shadow Filter");
 	ASSERT_TRUE(scriptContainer->getItemByteSize(1) != 0);
 )
 
-static const TestCase tests[] = {
+TestCase tests[] = {
 	// Framework tests
 	TEST_CASE("Dummy", dummy),
 	TEST_CASE("One Plus one is two", adding_works),
@@ -76,6 +62,7 @@ static const TestCase tests[] = {
 	TEST_CASE_END_SUITE()
 };
 
+/*
 void runTests() {
 	debug("[ RUN TESTS ]");
 	int i = 0;
@@ -89,6 +76,7 @@ void runTests() {
 		i++;
 	}
 }
+*/
 
-} // End of namespace MacVenture::Tests
-} // End of namespace MacVenture
+} // End of namespace KWorks::Tests
+} // End of namespace KWorks

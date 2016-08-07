@@ -29,7 +29,7 @@
 
 #include "macventure/macventure.h"
 
-#include "macventure/tests/tests.h"
+#include "macventure/tests/ktest.h"
 
 // To move
 #include "common/file.h"
@@ -127,7 +127,7 @@ Common::Error MacVentureEngine::run() {
 	debug("MacVenture::MacVentureEngine::init()");
 
 	if (DebugMan.isDebugChannelEnabled(kMVDebugTests)) {
-		Tests::runTests();
+		KWorks::Tests::runTests();
 		return Common::kNoError;
 	}
 

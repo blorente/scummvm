@@ -16,7 +16,8 @@ MODULE_OBJS := \
 	sound.o \
 	saveload.o \
 	datafiles.o \
-	tests/tests.o
+	tests/tests.o \
+	tests/ktest.o
 
 
 MODULE_DIRS += \
