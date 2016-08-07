@@ -30,8 +30,24 @@ bool t0() {
 	return true;
 }
 
+bool adding_works() {
+	return (1 + 1 == 2);
+}
+
+bool failing_test() {
+	return (1 + 1 == 4);
+}
+
+bool mock_container() {
+	Container *scriptContainer = new Container("Shadowgate II/Shadow Filter");
+	return scriptContainer->getItemByteSize(1) != 0;
+}
+
 static const TestCase tests[] = {
 	TEST_CASE("Dummy", *t0),
+	TEST_CASE("One Plus one is two", *adding_works),
+	TEST_CASE("Failing Test", *failing_test),
+	TEST_CASE("Containers can be instantiated", *mock_container),
 	TEST_CASE_END_SUITE()
 };
 
