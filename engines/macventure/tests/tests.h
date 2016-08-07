@@ -28,6 +28,10 @@
 namespace MacVenture {
 namespace Tests {
 
+// Testing tools
+#define DEF_TEST(funcname, code) bool funcname() { code; return true; }
+#define ASSERT_TRUE(x) if (!(x)) return false;
+
 #define TEST_CASE(name, fptr)  { name, fptr }
 #define TEST_CASE_END_SUITE() { "END_SUITE", nullptr }
 

@@ -26,27 +26,41 @@
 namespace MacVenture {
 namespace Tests {
 
-bool t0() {
-	return true;
-}
+DEF_TEST(t0, )
 
-bool adding_works() {
-	return (1 + 1 == 2);
-}
+DEF_TEST(adding_works,
+	ASSERT_TRUE(1 + 1 == 2);
+)
 
-bool failing_test() {
-	return (1 + 1 == 4);
-}
+DEF_TEST(assign_possible,
+	int number = 1;
+	ASSERT_TRUE(number == 1);
+)
 
-bool mock_container() {
+DEF_TEST(multiple_assert_tests,
+	int i = 0;
+	ASSERT_TRUE(++i == 1);
+	ASSERT_TRUE(++i == 2);
+	ASSERT_TRUE(++i == 3);
+)
+
+DEF_TEST(failing_test,
+	ASSERT_TRUE (1 + 1 == 4);
+)
+
+DEF_TEST(mock_container,
 	Container *scriptContainer = new Container("Shadowgate II/Shadow Filter");
-	return scriptContainer->getItemByteSize(1) != 0;
-}
+	ASSERT_TRUE(scriptContainer->getItemByteSize(1) != 0);
+)
 
 static const TestCase tests[] = {
+	// Framework tests
 	TEST_CASE("Dummy", *t0),
 	TEST_CASE("One Plus one is two", *adding_works),
-	TEST_CASE("Failing Test", *failing_test),
+	TEST_CASE("Test framework allows assignments", *assign_possible),
+	TEST_CASE("Multiple asserts allowed", multiple_assert_tests),
+	TEST_CASE("This is supposed to fail", *failing_test),
+	// Engine tests
 	TEST_CASE("Containers can be instantiated", *mock_container),
 	TEST_CASE_END_SUITE()
 };
