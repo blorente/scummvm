@@ -315,7 +315,7 @@ public:
 private:
 
 	void changeState(CursorInput input) {
-		debug(1, "Change cursor state: [%d] -> [%d]", _state, _transitionTable[_state][input]);
+		debugC(3, kMVDebugGUI, "Change cursor state: [%d] -> [%d]", _state, _transitionTable[_state][input]);
 		if (_state != _transitionTable[_state][input]) {
 			executeStateOut();
 			_state = _transitionTable[_state][input];
