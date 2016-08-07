@@ -26,8 +26,24 @@
 namespace MacVenture {
 namespace Tests {
 
+bool t0() {
+	return true;
+}
+
+static const TestCase tests[] = {
+	TEST_CASE("Dummy", *t0),
+	TEST_CASE_END_SUITE()
+};
+
 void runTests() {
 	debug("[ RUN TESTS ]");
+	int i = 0;
+	while (tests[i].name != "END_SUITE") {
+		bool testResult = tests[i].testFunction();
+		Common::String resultMessage = testResult ? "OK" : "FAIL";
+		debug("[ TEST ] %s...%s", tests[i].name.c_str(), resultMessage.c_str());
+		i++;
+	}
 }
 
 } // End of namespace MacVenture::Tests

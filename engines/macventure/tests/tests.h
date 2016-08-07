@@ -28,6 +28,14 @@
 namespace MacVenture {
 namespace Tests {
 
+#define TEST_CASE(name, fptr)  { name, fptr }
+#define TEST_CASE_END_SUITE() { "END_SUITE", nullptr }
+
+struct TestCase {
+	Common::String name;
+	bool (*testFunction)(void);
+};
+
 void runTests();
 
 } // End of namespace MacVenture::Tests
