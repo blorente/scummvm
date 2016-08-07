@@ -81,8 +81,11 @@ void runTests() {
 	int i = 0;
 	while (tests[i].name != "END_SUITE") {
 		bool testResult = tests[i].testFunction();
-		Common::String resultMessage = testResult ? " OK " : "FAIL";
-		debug("[ %s ] %s", resultMessage.c_str(), tests[i].name.c_str());
+		if (testResult) {
+			debug("[%c[1;32m  OK  %c[0m] %s", 27, 27, tests[i].name.c_str());
+		} else {
+			debug("[%c[1;31m FAIL %c[0m] %s", 27, 27, tests[i].name.c_str());
+		}
 		i++;
 	}
 }
