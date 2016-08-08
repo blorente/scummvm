@@ -643,7 +643,7 @@ void Gui::drawConsoleWindow() {
 
 	Graphics::ManagedSurface *srf = _outConsoleWindow->getSurface();
 	BorderBounds bounds = borderBounds(getWindowData(kOutConsoleWindow).type);
-	_consoleText->renderInto(srf, bounds.leftOffset);
+	_consoleText->renderInto(srf, bounds, kConsoleLeftOffset);
 }
 
 void Gui::drawObjectsInWindow(const WindowData &targetData, Graphics::ManagedSurface *surface) {
@@ -655,10 +655,7 @@ void Gui::drawObjectsInWindow(const WindowData &targetData, Graphics::ManagedSur
 	if (targetData.children.size() == 0) return;
 
 	Graphics::ManagedSurface *composeSurface = new Graphics::ManagedSurface();
-	composeSurface->create(
-		surface->w - border.leftOffset - border.rightOffset,
-		surface->h - border.topOffset - border.bottomOffset,
-		surface->format);
+	createInnerSurface(composeSurface, surface, border);
 	composeSurface->clear(kColorGreen);
 
 	for (uint i = 0; i < targetData.children.size(); i++) {
@@ -881,6 +878,13 @@ void Gui::loadGame(int slot) {
 void Gui::saveInto(int slot) {
 	_engine->saveGameState(slot, "desc");
 	_engine->preparedToRun();
+}
+
+void Gui::createInnerSurface(Graphics::ManagedSurface *innerSurface, Graphics::ManagedSurface *outerSurface, const BorderBounds &borders) {
+	innerSurface->create(
+		outerSurface->w - borders.leftOffset - borders.rightOffset,
+		outerSurface->h - borders.topOffset - borders.bottomOffset,
+		outerSurface->format);
 }
 
 void Gui::moveDraggedObject(Common::Point target) {
