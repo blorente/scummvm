@@ -1,4 +1,4 @@
-#include "macventure/tests/ktest.h"
+#include "ktest.h"
 
 namespace KWorks {
 namespace Tests {

@@ -62,21 +62,6 @@ TestCase tests[] = {
 	TEST_CASE_END_SUITE()
 };
 
-/*
-void runTests() {
-	debug("[ RUN TESTS ]");
-	int i = 0;
-	while (tests[i].name != "END_SUITE") {
-		bool testResult = tests[i].testFunction();
-		if (testResult) {
-			debug("[%c[1;32m  OK  %c[0m] %s", 27, 27, tests[i].name.c_str());
-		} else {
-			debug("[%c[1;31m FAIL %c[0m] %s", 27, 27, tests[i].name.c_str());
-		}
-		i++;
-	}
-}
-*/
 
 } // End of namespace KWorks::Tests
 } // End of namespace KWorks
