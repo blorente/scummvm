@@ -214,7 +214,6 @@ Common::Error MacVentureEngine::run() {
 
 				if (_gameState == kGameStateWinnig || _gameState == kGameStateLosing) {
 					endGame();
-					return Common::kNoError;
 				}
 			}
 			_gui->draw();
@@ -250,7 +249,6 @@ void MacVentureEngine::resetGui() {
 	updateControls();
 	updateExits();
 }
-
 
 void MacVentureEngine::requestQuit() {
 	// TODO: Display save game dialog and such
@@ -553,6 +551,7 @@ void MacVentureEngine::endGame() {
 }
 
 void MacVentureEngine::updateState(bool pause) {
+	_prepared = false;
 	runObjQueue();
 	printTexts();
 	playSounds(pause);
