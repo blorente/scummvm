@@ -304,10 +304,13 @@ void MacVentureEngine::gameChanged() {
 }
 
 void MacVentureEngine::winGame() {
+	_gui->showPrebuiltDialog(kWinGameDialog);
 	_gameState = kGameStateWinnig;
 }
 
 void MacVentureEngine::loseGame() {
+	_gui->showPrebuiltDialog(kWinGameDialog);
+	_paused = true;
 	_gameState = kGameStateLosing;
 }
 
