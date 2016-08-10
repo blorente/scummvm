@@ -191,9 +191,9 @@ Common::Error MacVentureEngine::run() {
 	while (_gameState != kGameStateQuitting) {
 		processEvents();
 
-		if (_gameState != kGameStateQuitting) {
+		if (_gameState != kGameStateQuitting && !_gui->isDialogOpen()) {
 
-			if (_prepared && !_gui->isDialogOpen()) {
+			if (_prepared) {
 				_prepared = false;
 
 				if (!_halted)
@@ -216,16 +216,20 @@ Common::Error MacVentureEngine::run() {
 					endGame();
 				}
 			}
-			_gui->draw();
-
-			g_system->updateScreen();
-			g_system->delayMillis(50);
 		}
+		_gui->draw();
+
+		g_system->updateScreen();
+		g_system->delayMillis(50);
 	}
 
 	_resourceManager->close();
 
 	return Common::kNoError;
+}
+
+void MacVentureEngine::newGame() {
+	warning("New Game not implemented!");
 }
 
 void MacVentureEngine::reset() {

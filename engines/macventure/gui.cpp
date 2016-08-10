@@ -880,7 +880,7 @@ void Gui::saveGame() {
 }
 
 void Gui::newGame() {
-	warning("New Game not implemented!");
+	_engine->newGame();
 }
 
 void Gui::quitGame() {
