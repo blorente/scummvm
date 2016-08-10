@@ -162,15 +162,7 @@ Common::Error MacVentureEngine::run() {
 
 	_soundManager = new SoundManager(this, _mixer);
 
-	_paused = false;
-	_halted = false;
-	_cmdReady = false;
-	_haltedAtEnd = false;
-	_haltedInSelection = false;
-	_clickToContinue = true;
-	_gameState = kGameStateInit;
-	_destObject = 0;
-	_prepared = true;
+	setInitialFlags();
 
 	int directSaveSlotLoading = ConfMan.getInt("save_slot");
 	if (directSaveSlotLoading >= 0) {
@@ -178,10 +170,7 @@ Common::Error MacVentureEngine::run() {
 			error("Could not load game from slot '%d'", directSaveSlotLoading);
 		}
 	} else {
-		_cmdReady = true;
-		ObjID playerParent = _world->getObjAttr(1, kAttrParentObject);
-		_currentSelection.push_back(playerParent);// Push the parent of the player
-		_world->setObjAttr(playerParent, kAttrContainerOpen, 1);
+		setNewGameState();
 	}
 	_selectedControl = kStartOrResume;
 
@@ -217,10 +206,7 @@ Common::Error MacVentureEngine::run() {
 				}
 			}
 		}
-		_gui->draw();
-
-		g_system->updateScreen();
-		g_system->delayMillis(50);
+		refreshScreen();
 	}
 
 	_resourceManager->close();
@@ -228,8 +214,36 @@ Common::Error MacVentureEngine::run() {
 	return Common::kNoError;
 }
 
+void MacVentureEngine::refreshScreen() {
+	_gui->draw();
+	g_system->updateScreen();
+	g_system->delayMillis(50);
+}
+
 void MacVentureEngine::newGame() {
-	warning("New Game not implemented!");
+	_world->startNewGame();
+	reset();
+	setInitialFlags();
+	setNewGameState();
+}
+
+void MacVentureEngine::setInitialFlags() {
+	_paused = false;
+	_halted = false;
+	_cmdReady = false;
+	_haltedAtEnd = false;
+	_haltedInSelection = false;
+	_clickToContinue = true;
+	_gameState = kGameStateInit;
+	_destObject = 0;
+	_prepared = true;
+}
+
+void MacVentureEngine::setNewGameState() {
+	_cmdReady = true;
+	ObjID playerParent = _world->getObjAttr(1, kAttrParentObject);
+	_currentSelection.push_back(playerParent);// Push the parent of the player
+	_world->setObjAttr(playerParent, kAttrContainerOpen, 1);
 }
 
 void MacVentureEngine::reset() {
@@ -252,6 +266,7 @@ void MacVentureEngine::resetGui() {
 	_gui->updateWindowInfo(kInventoryStart, 1, _world->getChildren(1, true));
 	updateControls();
 	updateExits();
+	refreshScreen();
 }
 
 void MacVentureEngine::requestQuit() {
