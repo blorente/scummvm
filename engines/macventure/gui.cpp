@@ -107,11 +107,11 @@ void menuCommandsCallback(int action, Common::String &text, void *data);
 Gui::Gui(MacVentureEngine *engine, Common::MacResManager *resman) {
 	_engine = engine;
 	_resourceManager = resman;
-	_windowData = nullptr;
-	_controlData = nullptr;
+	_windowData = NULL;
+	_controlData = NULL;
 	_draggedObj.id = 0;
 	_draggedObj.pos = Common::Point(0, 0);
-	_dialog = nullptr;
+	_dialog = NULL;
 
 	_cursor = new Cursor(this);
 
@@ -850,7 +850,7 @@ void Gui::showPrebuiltDialog(PrebuiltDialogs type) {
 }
 
 bool Gui::isDialogOpen() {
-	return _dialog != nullptr;
+	return _dialog != NULL;
 }
 
 void Gui::setTextInput(Common::String str) {
@@ -860,7 +860,7 @@ void Gui::setTextInput(Common::String str) {
 
 void Gui::closeDialog() {
 	delete _dialog;
-	_dialog = nullptr;
+	_dialog = NULL;
 }
 
 void Gui::getTextFromUser() {
@@ -954,7 +954,7 @@ Graphics::MacWindow * Gui::findWindow(WindowReference reference) {
 	}
 	switch (reference) {
 	case MacVenture::kNoWindow:
-		return nullptr;
+		return NULL;
 	case MacVenture::kCommandsWindow:
 		return _controlsWindow;
 	case MacVenture::kMainGameWindow:
@@ -968,7 +968,7 @@ Graphics::MacWindow * Gui::findWindow(WindowReference reference) {
 	case MacVenture::kDiplomaWindow:
 		return _diplomaWindow;
 	}
-	return nullptr;
+	return NULL;
 }
 
 void Gui::ensureInventoryOpen(WindowReference reference, ObjID id) {
