@@ -116,6 +116,7 @@ Gui::Gui(MacVentureEngine *engine, Common::MacResManager *resman) {
 	_cursor = new Cursor(this);
 
 	_consoleText = new ConsoleText(this);
+	_graphics = NULL;
 
 	initGUI();
 }
@@ -140,10 +141,7 @@ Gui::~Gui() {
 	if (_dialog)
 		delete _dialog;
 
-	Common::HashMap<ObjID, ImageAsset*>::const_iterator it = _assets.begin();
-	for (; it != _assets.end(); it++) {
-		delete it->_value;
-	}
+	clearAssets();
 }
 
 void Gui::initGUI() {
@@ -173,8 +171,12 @@ void Gui::initGUI() {
 
 }
 
-void Gui::draw() {
+void Gui::reloadInternals() {
+	loadGraphics();
+	clearAssets();
+}
 
+void Gui::draw() {
 	// Will be performance-improved after the milestone
 	_wm.setFullRefresh(true);
 
@@ -356,7 +358,16 @@ void Gui::loadBorder(Graphics::MacWindow * target, MVWindowType type, bool activ
 }
 
 void Gui::loadGraphics() {
+	if (_graphics)
+		delete _graphics;
 	_graphics = new Container(_engine->getFilePath(kGraphicPathID));
+}
+
+void Gui::clearAssets() {
+	Common::HashMap<ObjID, ImageAsset*>::const_iterator it = _assets.begin();
+	for (; it != _assets.end(); it++) {
+		delete it->_value;
+	}
 }
 
 bool Gui::loadMenus() {
