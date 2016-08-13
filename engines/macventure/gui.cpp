@@ -175,8 +175,8 @@ void Gui::initGUI() {
 }
 
 void Gui::reloadInternals() {
-	loadGraphics();
 	clearAssets();
+	loadGraphics();
 }
 
 void Gui::draw() {
