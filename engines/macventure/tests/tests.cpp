@@ -42,10 +42,58 @@ DEF_TEST(test_assert_eq,
 	ASSERT_EQUALS((1 + 1), 2);
 )
 
+struct Containers {
+	MacVenture::Container *scriptContainer;
+	MacVenture::Container *graphicContainer;
+	MacVenture::Container *soundContainer;
+	MacVenture::Container *textContainer;
+	MacVenture::Container *objectContainer;
+};
 
-DEF_TEST(mock_container,
-	MacVenture::Container *scriptContainer = new MacVenture::Container("Shadowgate II/Shadow Filter");
-	ASSERT_TRUE(scriptContainer->getItemByteSize(1) != 0);
+DEF_MOCK_SETUP(mock_containers, Containers,
+	target.scriptContainer = new MacVenture::Container("Shadowgate II/Shadow Filter");
+	target.graphicContainer = new MacVenture::Container("Shadowgate II/Shadow Graphic");
+	target.soundContainer = new MacVenture::Container("Shadowgate II/Shadow Sound");
+	target.textContainer = new MacVenture::Container("Shadowgate II/Shadow Text");
+	target.objectContainer = new MacVenture::Container("Shadowgate II/Shadow Object");
+)
+
+DEF_MOCK_TEARDOWN(mock_containers, Containers,
+	delete target.scriptContainer;
+	delete target.graphicContainer;
+	delete target.soundContainer;
+	delete target.textContainer;
+	delete target.objectContainer;
+)
+
+DEF_TEST(mock_stack_image,
+	Containers containers;
+	MOCK_SETUP(mock_containers, containers);
+	MacVenture::ImageAsset imageOnTheStack(538, containers.graphicContainer);
+	ASSERT_TRUE(imageOnTheStack.getWidth() > 0);
+	ASSERT_TRUE(imageOnTheStack.getHeight() > 0);
+	MOCK_TEARDOWN(mock_containers, containers);
+)
+
+DEF_TEST(mock_heap_image,
+	Containers containers;
+	MOCK_SETUP(mock_containers, containers);
+	MacVenture::ImageAsset *imageOnTheHeap = new MacVenture::ImageAsset(538, containers.graphicContainer);
+	ASSERT_TRUE(imageOnTheHeap->getWidth() > 0);
+	ASSERT_TRUE(imageOnTheHeap->getHeight() > 0);
+	MOCK_TEARDOWN(mock_containers, containers);
+	delete imageOnTheHeap;
+)
+
+DEF_TEST(blit_image_simple,
+	Containers containers;
+	MOCK_SETUP(mock_containers, containers);
+	Graphics::ManagedSurface srf;
+	srf.create(MacVenture::kScreenWidth, MacVenture::kScreenHeight, Graphics::PixelFormat::createFormatCLUT8());
+	MacVenture::ImageAsset smallImage(538, containers.graphicContainer);
+	smallImage.blitInto(&srf, 0, 0, MacVenture::kBlitBIC);
+	ASSERT_TRUE(true);
+	MOCK_TEARDOWN(mock_containers, containers);
 )
 
 TestCase tests[] = {
@@ -58,7 +106,10 @@ TestCase tests[] = {
 	TEST_CASE("One is different than two", test_assert_false),
 	TEST_CASE("One plus one is still two", test_assert_eq),
 	// Engine tests
-	TEST_CASE("Containers can be instantiated", *mock_container),
+	// Valngrind tests
+	TEST_CASE("Images on the stack don't leak", mock_stack_image),
+	TEST_CASE("Images on the heap don't leak", mock_heap_image),
+	TEST_CASE("Blitting images onto a surface doesn't leak", blit_image_simple),
 	TEST_CASE_END_SUITE()
 };
 
