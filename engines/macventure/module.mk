@@ -1,23 +1,22 @@
 MODULE := engines/macventure
 
 MODULE_OBJS := \
-	image.o \
-	detection.o \
-	object.o \
-	text.o \
-	world.o \
-	script.o \
-	macventure.o \
-	gui.o \
-	dialog.o \
 	controls.o \
-	prebuilt_dialogs.o \
-	windows.o \
-	sound.o \
-	saveload.o \
 	datafiles.o \
+	detection.o \
+	dialog.o \
+	gui.o \
+	image.o \
+	macventure.o \
 	tests/tests.o \
-	tests/ktest.o
+	tests/ktest.o \
+	prebuilt_dialogs.o \
+	saveload.o \
+	script.o \
+	sound.o \
+	text.o \
+	windows.o \
+	world.o
 
 
 MODULE_DIRS += \

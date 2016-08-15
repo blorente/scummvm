@@ -25,14 +25,14 @@
 
 namespace MacVenture {
 enum MacVentureDebugChannel {
-   kMVDebugMain = 1 << 0,
-   kMVDebugGUI = 1 << 1,
-   kMVDebugImage = 1 << 2,
-   kMVDebugText = 1 << 3,
-   kMVDebugScript = 1 << 4,
-   kMVDebugSound = 1 << 5,
-   kMVDebugContainer = 1 << 6,
-   kMVDebugTests = 1 << 31
+	kMVDebugMain = 1 << 0,
+	kMVDebugGUI = 1 << 1,
+	kMVDebugImage = 1 << 2,
+	kMVDebugText = 1 << 3,
+	kMVDebugScript = 1 << 4,
+	kMVDebugSound = 1 << 5,
+	kMVDebugContainer = 1 << 6,
+	kMVDebugTests = 1 << 31
 };
 } // End namespace MacVenture
 

@@ -404,12 +404,7 @@ void MacVentureEngine::handleObjectSelect(ObjID objID, WindowReference win, bool
 		} else {
 			if (objID == 0) {
 				unselectAll();
-				//if (windata.type == kAnimateBack) {
-					//doLasso(win, event, canDrag);
-				//}
-				//else {
-					objID = win;
-				//}
+				objID = win;
 			}
 			if (objID > 0) {
 				int currentObjectIndex = findObjectInArray(objID, _currentSelection);
@@ -554,10 +549,9 @@ bool MacVenture::MacVentureEngine::runScriptEngine() {
 			updateState(true);
 		}
 	}
-	if (_selectedControl == 1)
+	if (_selectedControl == 1) {
 		_gameChanged = false;
-
-	else if (isGameRunning()) {
+	} else if (isGameRunning()) {
 		if (_scriptEngine->runControl(kTick, _selectedControl, _destObject, _deltaPoint)) {
 			_haltedAtEnd = true;
 			return true;
@@ -1035,7 +1029,7 @@ ObjID MacVentureEngine::getParent(ObjID objID) {
 Common::Rect MacVentureEngine::getObjBounds(ObjID objID) {
 	Common::Point pos = getObjPosition(objID);
 
-	WindowReference win  = findParentWindow(objID);
+	WindowReference win = findParentWindow(objID);
 	if (win != kNoWindow) { // If it's not in a window YET, we don't really care about the border
 		BorderBounds bounds = borderBounds(_gui->getWindowData(win).type); // HACK
 		pos.x += bounds.leftOffset;
@@ -1056,8 +1050,7 @@ uint MacVentureEngine::getOverlapPercent(ObjID one, ObjID other) {
 	Common::Rect oneBounds = getObjBounds(one);
 	Common::Rect otherBounds = getObjBounds(other);
 	if (otherBounds.intersects(oneBounds) ||
-		oneBounds.intersects(otherBounds))
-	{
+		oneBounds.intersects(otherBounds)) {
 		uint areaOne = oneBounds.width() * oneBounds.height();
 		uint areaOther = otherBounds.width() * otherBounds.height();
 		return (areaOther * 100 / areaOne) | 0;
