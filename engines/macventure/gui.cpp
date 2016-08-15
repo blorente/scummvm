@@ -396,7 +396,6 @@ bool Gui::loadMenus() {
 	int i = 1;
 	for (iter = resArray.begin(); iter != resArray.end(); ++iter) {
 		res = _resourceManager->getResource(MKTAG('M', 'E', 'N', 'U'), *iter);
-		bool enabled;
 		uint16 key;
 		uint16 style;
 		uint8 titleLength;
@@ -404,7 +403,6 @@ bool Gui::loadMenus() {
 
 		/* Skip menuID, width, height, resourceID, placeholder */
 		for (int skip = 0; skip < 5; skip++) { res->readUint16BE(); }
-		enabled = res->readUint32BE();
 		titleLength = res->readByte();
 		title = new char[titleLength + 1];
 		res->read(title, titleLength);
@@ -499,7 +497,6 @@ bool Gui::loadControls() {
 	if ((resArray = _resourceManager->getResIDArray(MKTAG('C', 'N', 'T', 'L'))).size() == 0)
 		return false;
 
-	uint16 commandsBorder = borderBounds(kPlainDBox).topOffset;
 	uint32 id = kControlExitBox;
 	for (iter = resArray.begin(); iter != resArray.end(); ++iter) {
 		res = _resourceManager->getResource(MKTAG('C', 'N', 'T', 'L'), *iter);
@@ -557,7 +554,6 @@ void Gui::drawCommandsWindow() {
 	if (_engine->needsClickToContinue()) {
 		Graphics::ManagedSurface *srf = _controlsWindow->getSurface();
 		WindowData data = getWindowData(kCommandsWindow);
-		uint16 border = borderBounds(data.type).topOffset;
 		srf->fillRect(Common::Rect(0, 0, srf->w, srf->h), kColorWhite);
 		getCurrentFont().drawString(
 			srf,
@@ -622,12 +618,10 @@ void Gui::drawInventories() {
 		Graphics::MacWindow *win = findWindow(data.refcon);
 		srf = win->getSurface();
 		srf->clear(kColorGreen);
-		BorderBounds border = borderBounds(data.type);
 		srf->fillRect(srf->getBounds(), kColorWhite);
 		drawObjectsInWindow(data, srf);
 
 		if (DebugMan.isDebugChannelEnabled(kMVDebugGUI)) {
-			Graphics::MacWindow *win = findWindow(data.refcon);
 			Common::Rect innerDims = win->getInnerDimensions();
 			int x = win->getDimensions().left;
 			int y = win->getDimensions().top;
@@ -992,13 +986,15 @@ Graphics::MacWindow * Gui::findWindow(WindowReference reference) {
 		return _exitsWindow;
 	case MacVenture::kDiplomaWindow:
 		return _diplomaWindow;
+	default:
+		return NULL;
 	}
 	return NULL;
 }
 
 void Gui::ensureInventoryOpen(WindowReference reference, ObjID id) {
 	assert(reference < 0x80 && reference >= kInventoryStart);
-	if (reference - kInventoryStart == _inventoryWindows.size()) {
+	if (reference - kInventoryStart == (int)_inventoryWindows.size()) {
 		createInventoryWindow(id);
 	}
 }
