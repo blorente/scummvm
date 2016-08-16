@@ -271,7 +271,9 @@ void Gui::setWindowTitle(WindowReference winID, Common::String string) {
 }
 
 void Gui::updateWindowInfo(WindowReference ref, ObjID objID, const Common::Array<ObjID> &children) {
-	if (ref == kNoWindow) return;
+	if (ref == kNoWindow) {
+		return;
+	}
 	WindowData &data = findWindowData(ref);
 	data.children.clear();
 	data.objRef = objID;
@@ -288,9 +290,15 @@ void Gui::updateWindowInfo(WindowReference ref, ObjID objID, const Common::Array
 			data.children.push_back(DrawableObject(child, kBlitBIC));
 		}
 	}
-	if (originx != 0x7fff) data.bounds.left = originx;
-	if (originy != 0x7fff) data.bounds.top = originy;
-	if (ref != kMainGameWindow) data.updateScroll = true;
+	if (originx != 0x7fff) {
+		data.bounds.left = originx;
+	}
+	if (originy != 0x7fff) {
+		data.bounds.top = originy;
+	}
+	if (ref != kMainGameWindow) {
+		data.updateScroll = true;
+	}
 }
 
 void Gui::addChild(WindowReference target, ObjID child) {
@@ -301,7 +309,9 @@ void Gui::removeChild(WindowReference target, ObjID child) {
 	WindowData &data = findWindowData(target);
 	uint index = 0;
 	for (;index < data.children.size(); index++) {
-		if (data.children[index].obj == child) break;
+		if (data.children[index].obj == child) {
+			break;
+		}
 	}
 
 	if (index < data.children.size())
@@ -606,7 +616,9 @@ void Gui::drawMainGameWindow() {
 
 void Gui::drawSelfWindow() {
 	drawObjectsInWindow(getWindowData(kSelfWindow), _selfWindow->getSurface());
-	if (_engine->isObjSelected(1)) invertWindowColors(kSelfWindow);
+	if (_engine->isObjSelected(1)) {
+		invertWindowColors(kSelfWindow);
+	}
 	findWindow(kSelfWindow)->setDirty(true);
 }
 
@@ -671,7 +683,9 @@ void Gui::drawObjectsInWindow(const WindowData &targetData, Graphics::ManagedSur
 	ObjID child;
 	BlitMode mode;
 
-	if (targetData.children.size() == 0) return;
+	if (targetData.children.size() == 0) {
+		return;
+	}
 
 	Graphics::ManagedSurface composeSurface;
 	createInnerSurface(&composeSurface, surface, border);
@@ -740,12 +754,20 @@ void Gui::drawDraggedObject() {
 		uint h = asset->getHeight() + MIN((int16)0, _draggedObj.pos.y);
 
 		// In case of overflow from the bottom/left
-		if (_draggedObj.pos.x > 0 && _draggedObj.pos.x + w > kScreenWidth) { w = kScreenWidth - _draggedObj.pos.x; }
-		if (_draggedObj.pos.y > 0 && _draggedObj.pos.y + h > kScreenHeight) { h = kScreenHeight - _draggedObj.pos.y; }
+		if (_draggedObj.pos.x > 0 && _draggedObj.pos.x + w > kScreenWidth) {
+			w = kScreenWidth - _draggedObj.pos.x;
+		}
+		if (_draggedObj.pos.y > 0 && _draggedObj.pos.y + h > kScreenHeight) {
+			h = kScreenHeight - _draggedObj.pos.y;
+		}
 
 		Common::Point target = _draggedObj.pos;
-		if (target.x < 0) { target.x = 0; }
-		if (target.y < 0) { target.y = 0; }
+		if (target.x < 0) {
+			target.x = 0;
+		}
+		if (target.y < 0) {
+			target.y = 0;
+		}
 
 		_draggedSurface.create(w, h, _screen.format);
 		_draggedSurface.blitFrom(
@@ -770,11 +792,15 @@ void Gui::drawDraggedObject() {
 }
 
 void Gui::drawDialog() {
-	if (_dialog) _dialog->draw();
+	if (_dialog) {
+		_dialog->draw();
+	}
 }
 
 void Gui::updateWindow(WindowReference winID, bool containerOpen) {
-	if (winID == kNoWindow) return;
+	if (winID == kNoWindow) {
+		return;
+	}
 	if (winID == kSelfWindow || containerOpen) {
 		WindowData &data = findWindowData(winID);
 		if (winID == kCommandsWindow) {
@@ -826,8 +852,9 @@ void Gui::unselectExits() {
 }
 
 void Gui::updateExit(ObjID obj) {
-	if (!_engine->isObjExit(obj)) return;
-
+	if (!_engine->isObjExit(obj)) {
+		return;
+	}
 	BorderBounds border = borderBounds(getWindowData(kExitsWindow).type);
 
 	int ctl = -1;
@@ -947,7 +974,9 @@ Common::Point Gui::getGlobalScrolledSurfacePosition(WindowReference reference) {
 	const WindowData &data = getWindowData(reference);
 	BorderBounds border = borderBounds(data.type);
 	Graphics::MacWindow *win = findWindow(reference);
-	if (!win) return Common::Point(0, 0);
+	if (!win) {
+		return Common::Point(0, 0);
+	}
 	return Common::Point(
 		win->getDimensions().left + border.leftOffset - data.scrollPos.x,
 		win->getDimensions().top + border.topOffset - data.scrollPos.y);
@@ -1014,12 +1043,16 @@ WindowReference Gui::findObjWindow(ObjID objID) {
 	// This is a bit of a HACK, we take advantage of the consecutive nature of references
 	for (uint i = kCommandsWindow; i <= kDiplomaWindow; i++) {
 		const WindowData &data = getWindowData((WindowReference)i);
-		if (data.objRef == objID) { return data.refcon; }
+		if (data.objRef == objID) {
+			return data.refcon;
+		}
 	}
 
 	for (uint i = kInventoryStart; i < _inventoryWindows.size() + kInventoryStart; i++) {
 		const WindowData &data = getWindowData((WindowReference)i);
-		if (data.objRef == objID) { return data.refcon; }
+		if (data.objRef == objID) {
+			return data.refcon;
+		}
 	}
 
 	return kNoWindow;
@@ -1072,7 +1105,9 @@ void Gui::selectDraggable(ObjID child, WindowReference origin, Common::Point cli
 void Gui::handleDragRelease(bool shiftPressed, bool isDoubleClick) {
 	if (_draggedObj.id != 0) {
 		WindowReference destinationWindow = findWindowAtPoint(_draggedObj.pos);
-		if (destinationWindow == kNoWindow) return;
+		if (destinationWindow == kNoWindow) {
+			return;
+		}
 		if (_draggedObj.hasMoved) {
 			const WindowData &destinationWindowData = getWindowData(destinationWindow);
 			ObjID destObject = destinationWindowData.objRef;
@@ -1250,7 +1285,9 @@ bool Gui::processEvent(Common::Event &event) {
 
 	processed |= _cursor->processEvent(event);
 
-	if (_dialog && _dialog->processEvent(event)) return true;
+	if (_dialog && _dialog->processEvent(event)) {
+		return true;
+	}
 
 	if (event.type == Common::EVENT_MOUSEMOVE) {
 		if (_draggedObj.id != 0) {
@@ -1374,7 +1411,9 @@ bool MacVenture::Gui::processDiplomaEvents(WindowClick click, Common::Event & ev
 bool Gui::processInventoryEvents(WindowClick click, Common::Event & event) {
 	if (event.type == Common::EVENT_LBUTTONDOWN && click == kBorderCloseButton) {
 		WindowReference ref = findWindowAtPoint(event.mouse);
-		if (ref == kNoWindow) return false;
+		if (ref == kNoWindow) {
+			return false;
+		}
 
 		if (click == kBorderCloseButton) {
 			removeInventoryWindow(ref);
@@ -1388,7 +1427,9 @@ bool Gui::processInventoryEvents(WindowClick click, Common::Event & event) {
 	if (event.type == Common::EVENT_LBUTTONDOWN) {
 		// Find the appropriate window
 		WindowReference ref = findWindowAtPoint(event.mouse);
-		if (ref == kNoWindow) return false;
+		if (ref == kNoWindow) {
+			return false;
+		}
 
 		WindowData &data = findWindowData((WindowReference) ref);
 
@@ -1410,7 +1451,9 @@ bool Gui::processInventoryEvents(WindowClick click, Common::Event & event) {
 
 void Gui::selectForDrag(Common::Point cursorPosition) {
 	WindowReference ref = findWindowAtPoint(cursorPosition);
-	if (ref == kNoWindow) return;
+	if (ref == kNoWindow) {
+		return;
+	}
 
 	Graphics::MacWindow *win = findWindow(ref);
 	WindowData &data = findWindowData((WindowReference) ref);
@@ -1422,13 +1465,17 @@ void Gui::selectForDrag(Common::Point cursorPosition) {
 void Gui::handleSingleClick() {
 	debugC(2, kMVDebugGUI, "Registered Single Click");
 	// HACK THERE HAS TO BE A MORE ELEGANT WAY
-	if (_dialog) return;
+	if (_dialog) {
+		return;
+	}
 	handleDragRelease(false, false);
 }
 
 void Gui::handleDoubleClick() {
 	debugC(2, kMVDebugGUI, "Registered Double Click");
-	if (_dialog) return;
+	if (_dialog) {
+		return;
+	}
 	handleDragRelease(false, true);
 }
 
