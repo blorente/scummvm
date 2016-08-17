@@ -253,11 +253,11 @@ void Gui::initWindows() {
 	loadBorders(_exitsWindow, findWindowData(kExitsWindow).type);
 }
 
-const WindowData& Gui::getWindowData(WindowReference reference) {
+const WindowData &Gui::getWindowData(WindowReference reference) {
 	return findWindowData(reference);
 }
 
-const Graphics::Font& Gui::getCurrentFont() {
+const Graphics::Font &Gui::getCurrentFont() {
 	return *_wm.getFont("Chicago-12", Graphics::FontManager::kBigGUIFont);
 }
 
@@ -355,12 +355,12 @@ WindowReference Gui::createInventoryWindow(ObjID objRef) {
 	return newData.refcon;
 }
 
-void Gui::loadBorders(Graphics::MacWindow * target, MVWindowType type) {
+void Gui::loadBorders(Graphics::MacWindow *target, MVWindowType type) {
 	loadBorder(target, type, false);
 	loadBorder(target, type, true);
 }
 
-void Gui::loadBorder(Graphics::MacWindow * target, MVWindowType type, bool active) {
+void Gui::loadBorder(Graphics::MacWindow *target, MVWindowType type, bool active) {
 
 	Common::SeekableReadStream *stream = _engine->getBorderFile(type, active);
 
@@ -409,7 +409,7 @@ bool Gui::loadMenus() {
 		uint16 key;
 		uint16 style;
 		uint8 titleLength;
-		char* title;
+		char *title;
 
 		/* Skip menuID, width, height, resourceID, placeholder */
 		for (int skip = 0; skip < 5; skip++) { res->readUint16BE(); }
@@ -478,7 +478,7 @@ bool Gui::loadWindows() {
 		res->readUint32BE(); // Skip the true id. For some reason it's reading 0
 		data.titleLength = res->readByte();
 		if (data.titleLength) {
-			char* newTitle = new char[data.titleLength + 1];
+			char *newTitle = new char[data.titleLength + 1];
 			res->read(newTitle, data.titleLength);
 			newTitle[data.titleLength] = '\0';
 			data.title = Common::String(newTitle);
@@ -725,7 +725,7 @@ void Gui::drawObjectsInWindow(const WindowData &targetData, Graphics::ManagedSur
 	surface->transBlitFrom(composeSurface, composePosition, kColorGreen);
 }
 
-void Gui::drawWindowTitle(WindowReference target, Graphics::ManagedSurface * surface) {
+void Gui::drawWindowTitle(WindowReference target, Graphics::ManagedSurface *surface) {
 	WindowData &data = findWindowData(target);
 	BorderBounds border = borderBounds(data.type);
 
@@ -885,7 +885,7 @@ void Gui::updateExit(ObjID obj) {
 	}
 }
 
-void Gui::printText(const Common::String & text) {
+void Gui::printText(const Common::String &text) {
 	debugC(1, kMVDebugGUI, "Print Text: %s", text.c_str());
 	_consoleText->printLine(text, _outConsoleWindow->getDimensions().width());
 }
@@ -982,7 +982,7 @@ Common::Point Gui::getGlobalScrolledSurfacePosition(WindowReference reference) {
 		win->getDimensions().top + border.topOffset - data.scrollPos.y);
 }
 
-WindowData & Gui::findWindowData(WindowReference reference) {
+WindowData &Gui::findWindowData(WindowReference reference) {
 	assert(_windowData);
 
 	Common::List<WindowData>::iterator iter = _windowData->begin();
@@ -996,7 +996,7 @@ WindowData & Gui::findWindowData(WindowReference reference) {
 	error("GUI: Could not locate the desired window data");
 }
 
-Graphics::MacWindow * Gui::findWindow(WindowReference reference) {
+Graphics::MacWindow *Gui::findWindow(WindowReference reference) {
 	if (reference < 0x80 && reference >= kInventoryStart) { // It's an inventory window
 		return _inventoryWindows[reference - kInventoryStart];
 	}
@@ -1338,14 +1338,14 @@ bool Gui::processCommandEvents(WindowClick click, Common::Event &event) {
 	return false;
 }
 
-bool MacVenture::Gui::processMainGameEvents(WindowClick click, Common::Event & event) {
+bool MacVenture::Gui::processMainGameEvents(WindowClick click, Common::Event &event) {
 	if (_engine->needsClickToContinue())
 		return true;
 
 	return false;
 }
 
-bool MacVenture::Gui::processOutConsoleEvents(WindowClick click, Common::Event & event) {
+bool MacVenture::Gui::processOutConsoleEvents(WindowClick click, Common::Event &event) {
 	if (_engine->needsClickToContinue())
 		return true;
 
@@ -1361,7 +1361,7 @@ bool MacVenture::Gui::processOutConsoleEvents(WindowClick click, Common::Event &
 	return getWindowData(kOutConsoleWindow).visible;
 }
 
-bool MacVenture::Gui::processSelfEvents(WindowClick click, Common::Event & event) {
+bool MacVenture::Gui::processSelfEvents(WindowClick click, Common::Event &event) {
 	if (_engine->needsClickToContinue())
 		return true;
 
@@ -1371,7 +1371,7 @@ bool MacVenture::Gui::processSelfEvents(WindowClick click, Common::Event & event
 	return true;
 }
 
-bool MacVenture::Gui::processExitsEvents(WindowClick click, Common::Event & event) {
+bool MacVenture::Gui::processExitsEvents(WindowClick click, Common::Event &event) {
 	if (event.type == Common::EVENT_LBUTTONUP) {
 		if (_engine->needsClickToContinue()) {
 			return true;
@@ -1401,14 +1401,14 @@ bool MacVenture::Gui::processExitsEvents(WindowClick click, Common::Event & even
 	return getWindowData(kExitsWindow).visible;
 }
 
-bool MacVenture::Gui::processDiplomaEvents(WindowClick click, Common::Event & event) {
+bool MacVenture::Gui::processDiplomaEvents(WindowClick click, Common::Event &event) {
 	if (_engine->needsClickToContinue())
 		return true;
 
 	return getWindowData(kDiplomaWindow).visible;
 }
 
-bool Gui::processInventoryEvents(WindowClick click, Common::Event & event) {
+bool Gui::processInventoryEvents(WindowClick click, Common::Event &event) {
 	if (event.type == Common::EVENT_LBUTTONDOWN && click == kBorderCloseButton) {
 		WindowReference ref = findWindowAtPoint(event.mouse);
 		if (ref == kNoWindow) {
